@@ -26,7 +26,7 @@ async function search(qurey){
         const cuisine = qurey.cuisine;
         const diet = qurey.diet;
         const intolerances = qurey.intolerances;
-        const response = await axios.get(`${api_domain}/complexSearch?`, {
+        const response = await axios.get(`${api_domain}/complexSearch`, {
             params: {
                 query:name,
                 number: amount ,
@@ -38,7 +38,7 @@ async function search(qurey){
         });
     }
     else{
-        const response = await axios.get(`${api_domain}/complexSearch?`, {
+        const response = await axios.get(`${api_domain}/complexSearch`, {
             params: {
                 query:name,
                 number: amount ,
@@ -46,7 +46,10 @@ async function search(qurey){
             }
         });
     }
-    return response;
+    recipes_ids=[];
+    results= response.results;
+    results.map((recipe) => recipe_ids.push(recipe.id))
+    return getRecipesPreview(recipe_ids);
 
 }
 
@@ -101,6 +104,11 @@ async function getRandomThreeRecipes(){
     return getRecipesPreview([filtered_recipes[0],filtered_recipes[1], filtered_recipes[2]]);
 }
 
+async function getRecipeFullDetails(recipe_id) {
+    let recipe_info = await getRecipeInformation(recipe_id);
+    return recipe_info.data;
+}
+
 async function getRecipeDetails(recipe_id) {
     let recipe_info = await getRecipeInformation(recipe_id);
     let { id, title, readyInMinutes, image, aggregateLikes, vegan, vegetarian, glutenFree } = recipe_info.data;
@@ -121,6 +129,9 @@ async function getRecipeDetails(recipe_id) {
 
 
 exports.getRecipeDetails = getRecipeDetails;
+exports.getRandomThreeRecipes = getRandomThreeRecipes;
+exports.search = search;
+exports.getRecipeFullDetails = getRecipeFullDetails;
 
 
 
