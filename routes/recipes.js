@@ -17,4 +17,25 @@ router.get("/:recipeId", async (req, res, next) => {
   }
 });
 
+router.get("/search" , async(req, res) => {
+  const query = req.query;
+  try{
+    let search_results= await recipes_utils.search(query);
+    res.send(search_results);
+  }catch(error){
+    res.sendStatus(404);
+  }
+
+});
+
+router.get("/random", async (req, res , next) => {
+  try{
+    let random_3_recipes = await recipes_utils.getRandomThreeRecipes();
+    res.send(random_3_recipes);
+  } catch (error) {
+    next(error);
+  }
+
+});
+
 module.exports = router;
