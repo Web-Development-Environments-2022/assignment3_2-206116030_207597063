@@ -3,13 +3,10 @@ const { response } = require("express");
 const api_domain = "https://api.spoonacular.com/recipes";
 
 
-//check 
 /**
  * Get recipes list from spooncular response and extract the relevant recipe data for preview
  * @param {*} recipes_info 
  */
-
-
 async function getRecipeInformation(recipe_id) {
     return await axios.get(`${api_domain}/${recipe_id}/information`, {
         params: {
@@ -63,7 +60,33 @@ async function getRandomRecipes(){
     return response;
 }
 
+//need to check this function
+async function getRecipesFromDB(recipes){
+    return recipes.map((recipe_id)=>{
+        const recipe = await DButils.execQuery(`select * from MyRecipes where ID='${recipe_id}'`);
+        const{
+            id,
+            title,
+            readyInMinutes,
+            image,
+            aggregateLikes,
+            vegan,
+            vegetarian,
+            glutenFree
+        } = recipe;
+        return {
+            id: id,
+            title: title,
+            image: image,
+            readyInMinutes: readyInMinutes,
+            popularity: aggregateLikes,
+            vegan: vegan,
+            vegetarian: vegetarian,
+            glutenFree: glutenFree
+        }
+    });
 
+}
 async function getRecipesPreview(recipes){
 
     return recipes.map((recipe)=>{
@@ -132,6 +155,5 @@ exports.getRecipeDetails = getRecipeDetails;
 exports.getRandomThreeRecipes = getRandomThreeRecipes;
 exports.search = search;
 exports.getRecipeFullDetails = getRecipeFullDetails;
-
-
+exports.getRecipesFromDB = getRecipesFromDB;
 
