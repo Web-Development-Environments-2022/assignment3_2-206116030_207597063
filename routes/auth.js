@@ -3,6 +3,7 @@ var router = express.Router();
 const MySql = require("../routes/utils/MySql");
 const DButils = require("../routes/utils/DButils");
 const bcrypt = require("bcrypt");
+var id=0;
 
 router.post("/Register", async (req, res, next) => {
   try {
@@ -30,9 +31,10 @@ router.post("/Register", async (req, res, next) => {
       parseInt(process.env.bcrypt_saltRounds)
     );
     await DButils.execQuery(
-      `INSERT INTO users VALUES ('${user_details.username}', '${user_details.firstname}', '${user_details.lastname}',
+      `INSERT INTO users VALUES ('${id}','${user_details.username}', '${user_details.firstname}', '${user_details.lastname}',
       '${user_details.country}', '${hash_password}', '${user_details.email}')`
     );
+    id = id+1;
     res.status(201).send({ message: "user created", success: true });
   } catch (error) {
     next(error);

@@ -11,7 +11,7 @@ async function getRecipeInformation(recipe_id) {
     return await axios.get(`${api_domain}/${recipe_id}/information`, {
         params: {
             includeNutrition: false,
-            apiKey: process.env.spooncular_apiKey
+            apiKey: process.env.api_token
         }
     });
 }
@@ -30,7 +30,7 @@ async function search(qurey){
                 cuisine: cuisine,
                 diet: diet,
                 intolerances: intolerances,
-                apiKey: process.env.spooncular_apiKey
+                apiKey: process.env.api_token
             }
         });
     }
@@ -39,7 +39,7 @@ async function search(qurey){
             params: {
                 query:name,
                 number: amount ,
-                apiKey: process.env.spooncular_apiKey
+                apiKey: process.env.api_token
             }
         });
     }
@@ -54,7 +54,7 @@ async function getRandomRecipes(){
     const response = await axios.get(`${api_domain}/random`,{
         params: {
             number: 10 ,
-            apiKey: process.env.spooncular_apiKey
+            apiKey: process.env.api_token
         }
     });
     return response;
@@ -63,7 +63,7 @@ async function getRandomRecipes(){
 //need to check this function
 async function getRecipesFromDB(recipes){
     return recipes.map((recipe_id)=>{
-        const recipe = await DButils.execQuery(`select * from MyRecipes where ID='${recipe_id}'`);
+        const recipe = DButils.execQuery(`select * from MyRecipes where ID='${recipe_id}'`);
         const{
             id,
             title,
@@ -103,7 +103,7 @@ async function getRecipesPreview(recipes){
             vegan,
             vegetarian,
             glutenFree
-        } = data;
+        } = recipe_details;
         return {
             id: id,
             title: title,
@@ -120,6 +120,7 @@ async function getRecipesPreview(recipes){
 }
 async function getRandomThreeRecipes(){
     let random_recipes= await getRandomRecipes();
+    console.log(random_recipes);
     let filtered_recipes= random_recipes.filter((recipe) => (recipe.instructions != "") && (recipe.image && recipe.aggregateLikes && recipe.vegan && recipe.vegetarian && recipe.glutenFree))
     if(filtered_recipes <3 ){
         return getRandomThreeRecipes();

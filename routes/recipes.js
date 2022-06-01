@@ -39,7 +39,7 @@ router.get("/random", async (req, res , next) => {
     let random_3_recipes = await recipes_utils.getRandomThreeRecipes();
     res.send(random_3_recipes);
   } catch (error) {
-    next(error);
+    res.sendStatus(403);
   }
 
 });
