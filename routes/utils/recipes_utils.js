@@ -19,41 +19,49 @@ async function search(qurey){
     const name = qurey.name;
     const amount = qurey.amount;
     const filter = qurey.filter;
-    if( filter === 1 ){
+    var response;
+
+    if( filter == 1 ){
         const cuisine = qurey.cuisine;
         const diet = qurey.diet;
         const intolerances = qurey.intolerances;
-        const response = await axios.get(`${api_domain}/complexSearch`, {
+        response = await axios.get(`${api_domain}/complexSearch`, {
             params: {
                 query:name,
                 number: amount ,
                 cuisine: cuisine,
                 diet: diet,
                 intolerances: intolerances,
+                instructionsRequired: true,
+                addRecipeInformation: true,
                 apiKey: process.env.api_token
             }
         });
     }
     else{
-        const response = await axios.get(`${api_domain}/complexSearch`, {
+        response = await axios.get(`${api_domain}/complexSearch`, {
             params: {
                 query:name,
                 number: amount ,
+                instructionsRequired: true,
+                addRecipeInformation: true,
                 apiKey: process.env.api_token
             }
         });
+
     }
-    recipes_ids=[];
-    results= response.results;
-    results.map((recipe) => recipe_ids.push(recipe.id))
-    return getRecipesPreview(recipe_ids);
+    let recipes_ids=[];
+    let results= response.data.results;
+    console.log(results);
+    let previews= getRecipesPreview(results);
+    return previews;
 
 }
 
 async function getRandomRecipes(){
     const response = await axios.get(`${api_domain}/random`,{
         params: {
-            number: 10 ,
+            number: 20,
             apiKey: process.env.api_token
         }
     });
@@ -88,9 +96,10 @@ async function getRecipesFromDB(recipes){
 
 }
 async function getRecipesPreview(recipes){
-
-    return recipes.map((recipe)=>{
+    let ret_recipes=[];
+    recipes.map((recipe)=>{
         let recipe_details = recipe;
+        console.log(recipe_details);
         if(recipe.data){
             recipe_details = recipe.data;
         }
@@ -104,7 +113,7 @@ async function getRecipesPreview(recipes){
             vegetarian,
             glutenFree
         } = recipe_details;
-        return {
+        ret_recipes.push({
             id: id,
             title: title,
             image: image,
@@ -114,18 +123,19 @@ async function getRecipesPreview(recipes){
             vegetarian: vegetarian,
             glutenFree: glutenFree
 
-        }
+        });
     });
+    return ret_recipes;
 
 }
 async function getRandomThreeRecipes(){
     let random_recipes= await getRandomRecipes();
-    console.log(random_recipes);
-    let filtered_recipes= random_recipes.filter((recipe) => (recipe.instructions != "") && (recipe.image && recipe.aggregateLikes && recipe.vegan && recipe.vegetarian && recipe.glutenFree))
-    if(filtered_recipes <3 ){
+    let filtered_recipes= random_recipes.data.recipes.filter((recipe) => (recipe.instructions != "") && (recipe.image && recipe.aggregateLikes && recipe.vegan && recipe.vegetarian && recipe.glutenFree))
+    if(filtered_recipes.length < 3 ){
         return getRandomThreeRecipes();
     }
-    return getRecipesPreview([filtered_recipes[0],filtered_recipes[1], filtered_recipes[2]]);
+    let preview= getRecipesPreview([filtered_recipes[0],filtered_recipes[1], filtered_recipes[2]]);
+    return preview;
 }
 
 async function getRecipeFullDetails(recipe_id) {

@@ -43,10 +43,13 @@ router.post("/Register", async (req, res, next) => {
 
 router.post("/Login", async (req, res, next) => {
   try {
+    console.log("in login")
     // check that username exists
     const users = await DButils.execQuery("SELECT username FROM users");
+    console.log("got users")
     if (!users.find((x) => x.username === req.body.username))
       throw { status: 401, message: "Username or Password incorrect" };
+    console.log("check password")
 
     // check that the password is correct
     const user = (
