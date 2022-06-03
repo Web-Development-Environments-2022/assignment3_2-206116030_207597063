@@ -47,12 +47,18 @@ router.get('/favorites', async (req,res,next) => {
     let favorite_recipes = {};
     const recipes_id = await user_utils.getFavoriteRecipes(user_id);
     let recipes_id_array = [];
-    recipes_id.map((element) => recipes_id_array.push(element.RecipeID)); //extracting the recipe ids into array
+    recipes_id.map((element) => recipes_id_array.push({
+      id : element.recipeID,
+      title : element.Title,
+      image : element.RecipeImage,
+      readyInMinutes : element.ReadyInMinutes,
+      popularity : element.TotalLikes,
+      vegen : element.Vegen,
+      vegeterian : element.Vegeterian,
+      glutenFree : element.GlutenFree
+    })); //extracting the recipe ids into array
     console.log(recipes_id_array);
-    let results= await recipe_utils.getRecipesFromDB(recipes_id_array);
-    console.log('results');
-    console.log(results);
-    res.status(200).send(results);
+    res.status(200).send(recipes_id_array);
   } catch(error){
     console.log(error);
   }
@@ -62,15 +68,21 @@ router.get('/myRecipes', async (req,res,next) => {
   try{
     const user_id = req.session.user_id;
     let my_recipes = {};
-    console.log(user_id);
+    let favorite_recipes = {};
     const recipes_id = await user_utils.getMyRecipes(user_id);
-    console.log(recipes_id);
     let recipes_id_array = [];
-    recipes_id.map((element) => recipes_id_array.push(element.RecipeID)); //extracting the recipe ids into array
+    recipes_id.map((element) => recipes_id_array.push({
+      id : element.recipeID,
+      title : element.Title,
+      image : element.RecipeImage,
+      readyInMinutes : element.ReadyInMinutes,
+      popularity : element.TotalLikes,
+      vegen : element.Vegen,
+      vegeterian : element.Vegeterian,
+      glutenFree : element.GlutenFree
+    })); //extracting the recipe ids into array
     console.log(recipes_id_array);
-    const results = await recipe_utils.getRecipesFromDB(recipes_id_array);
-
-    res.status(200).send(results);
+    res.status(200).send(recipes_id_array);
   } catch(error){
     next(error); 
   }
@@ -80,3 +92,4 @@ router.get('/myRecipes', async (req,res,next) => {
 
 
 module.exports = router;
+

@@ -7,12 +7,15 @@ async function markAsFavorite(user_id, recipe_id){
 }
 
 async function getFavoriteRecipes(user_id){
-    const recipes_id = await DButils.execQuery(`select RecipeID from FavoriteRecipes where UserID='${user_id}'`);
+    const recipes_id = await DButils.execQuery(
+        `select recipeID, Title, RecipeImage, ReadyInMinutes, TotalLikes,Vegen, Vegeterian, GlutenFree from
+        FavoriteRecipes inner join recipes on FavoriteRecipes.RecipeID=recipes.ID where UserID='${user_id}'`);
     return recipes_id;
 }
 
 async function getMyRecipes(user_id){
-    const recipes_id = await DButils.execQuery(`select RecipeID from MyRecipes where UserID='${user_id}'`);
+    const recipes_id = await DButils.execQuery(`select recipeID, Title, RecipeImage, ReadyInMinutes, TotalLikes,Vegen, Vegeterian,
+     GlutenFree from myrecipes inner join recipes on myrecipes.RecipeID=recipes.ID where UserID='${user_id}'`);
     return recipes_id;
 }
 
