@@ -3,6 +3,7 @@ const MySql = require("./MySql");
 
 exports.execQuery = async function (query) {
     let returnValue = []
+    console.log("trying to connect")
     const connection = await MySql.connection();
     console.log("got connection")
     try {

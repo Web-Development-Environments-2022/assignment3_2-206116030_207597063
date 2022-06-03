@@ -45,17 +45,19 @@ router.post("/addRecipe", async (req, res) =>{
     vegeterian: req.body.vegeterian,
     glutenFree: req.body.glutenFree
   }
+  console.log(recipe_details);
   id=id+1;
-  await DButils.execQuery(
-    `INSERT INTO recipes VALUES ('${recipe_details.recipeID}', '${recipe_details.title}', '${recipe_details.recipeImage}',
-    '${recipe_details.readyInMinutes}', '${recipe_details.totalLikes}', '${recipe_details.vegen}', '${recipe_details.vegeterian}','${recipe_details.glutenFree}')`
-  );
-  await DButils.execQuery(
-    `INSERT INTO MyRecipes VALUES ('${recipe_details.userID}', '${recipe_details.recipeID}')`
-  );
-  res.status(201).send({ message: "recipe created", success: true });
+  let bool = await recipes_utils.addRecipeToDB(recipe_details);
+  if(bool){
+    res.status(201).send({ message: "recipe created", success: true });
+  }
+  else{
+    res.sendStatus(400);
+  }
 } catch (error) {
-  next(error);
+  res.sendStatus(400);
+  console.log(error);
+
 }
 })
 
@@ -67,7 +69,7 @@ router.get("/:recipeId", async (req, res, next) => {
     const recipe = await recipes_utils.getRecipeFullDetails(req.params.recipeId);
     res.send(recipe);
   } catch (error) {
-    next(error);
+    res.sendStatus(404);
   }
 });
 

@@ -16,7 +16,7 @@ router.use(async function (req, res, next) {
       }
     }).catch(err => next(err));
   } else {
-    res.sendStatus(401);
+    next()
   }
 });
 
@@ -26,10 +26,12 @@ router.use(async function (req, res, next) {
  */
 router.post('/favorites', async (req,res,next) => {
   try{
+    console.log(req.body);
     const user_id = req.session.user_id;
     const recipe_id = req.body.recipeId;
-    await user_utils.markAsFavorite(user_id,recipe_id);
-    res.status(200).send("The Recipe successfully saved as favorite");
+    console.log(recipe_id);
+    console.log(user_id);
+    user_utils.markAsFavorite(user_id,recipe_id).then(res.status(200).send("The Recipe successfully saved as favorite"));
     } catch(error){
     next(error);
   }
@@ -41,14 +43,18 @@ router.post('/favorites', async (req,res,next) => {
 router.get('/favorites', async (req,res,next) => {
   try{
     const user_id = req.session.user_id;
+    console.log(user_id);
     let favorite_recipes = {};
     const recipes_id = await user_utils.getFavoriteRecipes(user_id);
     let recipes_id_array = [];
-    recipes_id.map((element) => recipes_id_array.push(element.recipe_id)); //extracting the recipe ids into array
-    const results = await recipe_utils.getRecipesFromDB(recipes_id_array);
+    recipes_id.map((element) => recipes_id_array.push(element.RecipeID)); //extracting the recipe ids into array
+    console.log(recipes_id_array);
+    let results= await recipe_utils.getRecipesFromDB(recipes_id_array);
+    console.log('results');
+    console.log(results);
     res.status(200).send(results);
   } catch(error){
-    next(error); 
+    console.log(error);
   }
 });
 
@@ -56,10 +62,14 @@ router.get('/myRecipes', async (req,res,next) => {
   try{
     const user_id = req.session.user_id;
     let my_recipes = {};
+    console.log(user_id);
     const recipes_id = await user_utils.getMyRecipes(user_id);
+    console.log(recipes_id);
     let recipes_id_array = [];
-    recipes_id.map((element) => recipes_id_array.push(element.recipe_id)); //extracting the recipe ids into array
+    recipes_id.map((element) => recipes_id_array.push(element.RecipeID)); //extracting the recipe ids into array
+    console.log(recipes_id_array);
     const results = await recipe_utils.getRecipesFromDB(recipes_id_array);
+
     res.status(200).send(results);
   } catch(error){
     next(error); 
