@@ -9,7 +9,7 @@ CREATE TABLE users(
     PRIMARY KEY(ID) 
 );
 CREATE TABLE recipes(
-    ID int NOT NULL,
+    ID VARCHAR(255) NOT NULL,
     Title VARCHAR(255),
     RecipeImage Blob,
     ReadyInMinutes VARCHAR(255),
@@ -22,12 +22,12 @@ CREATE TABLE recipes(
 
 CREATE TABLE FavoriteRecipes(
     UserID int NOT NULL,
-    RecipeID int NOT NULL,
+    RecipeID VARCHAR(255) NOT NULL,
     PRIMARY KEY(UserID,RecipeID) 
 );
 
 CREATE TABLE MyRecipes(
     UserID int NOT NULL,
-    RecipeID int NOT NULL,
+    RecipeID VARCHAR(255) NOT NULL,
     PRIMARY KEY(UserID,RecipeID) 
 );

@@ -47,6 +47,7 @@ router.get('/favorites', async (req,res,next) => {
     let favorite_recipes = {};
     const recipes_id = await user_utils.getFavoriteRecipes(user_id);
     let recipes_id_array = [];
+    const recipes_id_sp = await user_utils.getFavoriteRecipesSp(user_id);
     recipes_id.map((element) => recipes_id_array.push({
       id : element.recipeID,
       title : element.Title,
@@ -56,7 +57,17 @@ router.get('/favorites', async (req,res,next) => {
       vegen : element.Vegen,
       vegeterian : element.Vegeterian,
       glutenFree : element.GlutenFree
-    })); //extracting the recipe ids into array
+    })); //extracting the recipe ids from db into array
+    recipes_id_sp.map((element) => recipes_id_array.push({
+      id : element.id,
+      title : element.title,
+      image : element.image,
+      readyInMinutes : element.readyInMinutes,
+      popularity : element.popularity,
+      vegen : element.vegan,
+      vegeterian : element.vegetarian,
+      glutenFree : element.glutenFree
+    })); //extracting the recipe ids from sp into array
     console.log(recipes_id_array);
     res.status(200).send(recipes_id_array);
   } catch(error){

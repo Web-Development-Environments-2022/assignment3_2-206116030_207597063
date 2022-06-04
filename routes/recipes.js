@@ -36,7 +36,7 @@ router.post("/addRecipe", async (req, res) =>{
   try{
     let recipe_details = {
     userID: req.session.user_id,
-    recipeID: id,
+    recipeID: 'd'+id,
     title: req.body.title,
     recipeImage: req.body.recipeImage,
     readyInMinutes: req.body.readyInMinutes,

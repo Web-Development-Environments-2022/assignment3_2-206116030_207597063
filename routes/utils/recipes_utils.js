@@ -142,7 +142,7 @@ async function addRecipeToDB(recipe_details){
       );
       console.log("passed first insert");
       await DButils.execQuery(
-        `INSERT INTO Myrecipes VALUES ('${recipe_details.userID}', '${recipe_details.recipeID}')`
+        `INSERT INTO myrecipes VALUES ('${recipe_details.userID}', '${recipe_details.recipeID}')`
       );
       console.log("passed second insert");
       return true;
@@ -187,4 +187,5 @@ exports.search = search;
 exports.getRecipeFullDetails = getRecipeFullDetails;
 exports.getRecipesFromDB = getRecipesFromDB;
 exports.addRecipeToDB = addRecipeToDB;
+exports.getRecipesPreview = getRecipesPreview;
 
