@@ -18,6 +18,7 @@ router.get("/search" , async(req, res) => {
     res.sendStatus(404);
   }
 
+  
 });
 /**
  * Returns a 3 random recipes preview
