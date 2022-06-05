@@ -5,16 +5,24 @@ const api_domain = "https://api.spoonacular.com/recipes";
 
 
 /**
- * Get recipes list from spooncular response and extract the relevant recipe data for preview
+ * Get recipes list from spooncular response or db and extract the relevant recipe data for preview
  * @param {*} recipes_info 
  */
 async function getRecipeInformation(recipe_id) {
-    return await axios.get(`${api_domain}/${recipe_id}/information`, {
-        params: {
-            includeNutrition: false,
-            apiKey: process.env.api_token
-        }
-    });
+    if(recipe_id.startsWith('d')){
+        const ret = await DButils.execQuery(`select * from recipes where ID='${recipe_id}'`);
+        console.log(ret);
+        return ret;
+    }
+    else{
+        return await axios.get(`${api_domain}/${recipe_id}/information`, {
+            params: {
+                includeNutrition: false,
+                apiKey: process.env.api_token
+            }
+        });
+    }
+     
 }
 async function search(qurey){
     const name = qurey.name;
@@ -115,6 +123,7 @@ async function getRecipesPreview(recipes){
             readyInMinutes,
             image,
             aggregateLikes,
+            analyzedInstructions,
             vegan,
             vegetarian,
             glutenFree
@@ -125,6 +134,7 @@ async function getRecipesPreview(recipes){
             image: image,
             readyInMinutes: readyInMinutes,
             popularity: aggregateLikes,
+            summary: analyzedInstructions,
             vegan: vegan,
             vegetarian: vegetarian,
             glutenFree: glutenFree
@@ -159,7 +169,10 @@ async function getRandomThreeRecipes(){
 
 async function getRecipeFullDetails(recipe_id) {
     let recipe_info = await getRecipeInformation(recipe_id);
-    return recipe_info.data;
+    if(recipe_id.startsWith('d')){
+        return recipe_info;
+    }
+    else return recipe_info.data;
 }
 
 async function getRecipeDetails(recipe_id) {
