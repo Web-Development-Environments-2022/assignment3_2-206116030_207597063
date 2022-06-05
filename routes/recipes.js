@@ -13,6 +13,7 @@ router.get("/search" , async(req, res) => {
   try{
     let search_results= await recipes_utils.search(query);
     console.log(search_results);
+    res.send(search_results);
   }catch(error){
     res.sendStatus(404);
   }
