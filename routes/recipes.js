@@ -12,7 +12,6 @@ router.get("/search" , async(req, res) => {
   const query = req.query;
   try{
     let search_results= await recipes_utils.search(query);
-    console.log(search_results);
     res.send(search_results);
   }catch(error){
     res.sendStatus(404);
@@ -45,9 +44,11 @@ router.post("/addRecipe", async (req, res) =>{
     totalLikes: '0',
     vegen: req.body.vegen,
     vegeterian: req.body.vegeterian,
-    glutenFree: req.body.glutenFree
+    glutenFree: req.body.glutenFree,
+    servings: req.body.servings,
+    analyzedInstructions: req.body.analyzedInstructions,
+    ingredients: req.body.ingredients
   }
-  console.log(recipe_details);
   id=id+1;
   let bool = await recipes_utils.addRecipeToDB(recipe_details);
   if(bool){

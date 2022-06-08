@@ -10,8 +10,7 @@ const api_domain = "https://api.spoonacular.com/recipes";
  */
 async function getRecipeInformation(recipe_id) {
     if(recipe_id.startsWith('d')){
-        const ret = await DButils.execQuery(`select * from recipes where ID='${recipe_id}'`);
-        console.log(ret);
+        const ret = await DButils.execQuery(`select * from recipes where RecipeID='${recipe_id}'`);
         return ret;
     }
     else{
@@ -27,8 +26,11 @@ async function getRecipeInformation(recipe_id) {
 async function search(qurey){
     const name = qurey.name;
     const amount = qurey.amount;
+    // 5 10 15
     const filter = qurey.filter;
-
+    // 0 | 1
+    const sortBy= qurey.sort;
+    // popularity | time
     var response;
 
     if( filter == 1 ){
@@ -42,6 +44,7 @@ async function search(qurey){
                 cuisine: cuisine,
                 diet: diet,
                 intolerances: intolerances,
+                sort: sortBy,
                 instructionsRequired: true,
                 addRecipeInformation: true,
                 apiKey: process.env.api_token
@@ -53,6 +56,7 @@ async function search(qurey){
             params: {
                 query:name,
                 number: amount ,
+                sort: sortBy,
                 instructionsRequired: true,
                 addRecipeInformation: true,
                 apiKey: process.env.api_token
@@ -60,9 +64,7 @@ async function search(qurey){
         });
 
     }
-    let recipes_ids=[];
     let results= response.data.results;
-    console.log(results);
     let previews= getRecipesPreview(results);
     return previews;
 
@@ -82,9 +84,7 @@ async function getRandomRecipes(){
 async function getRecipesFromDB(recipes){
     let ret=[];
     recipes.map(async (recipe_id)=>{
-        console.log("iteration");
-        const recipe = await DButils.execQuery(`select * from recipes where ID='${recipe_id}'`);
-        console.log(recipe);
+        const recipe = await DButils.execQuery(`select * from recipes where RecipeID='${recipe_id}'`);
         const {
             ID,
             Title,
@@ -113,7 +113,6 @@ async function getRecipesPreview(recipes){
     let ret_recipes=[];
     recipes.map((recipe)=>{
         let recipe_details = recipe;
-        console.log(recipe_details);
         if(recipe.data){
             recipe_details = recipe.data;
         }
@@ -123,7 +122,6 @@ async function getRecipesPreview(recipes){
             readyInMinutes,
             image,
             aggregateLikes,
-            analyzedInstructions,
             vegan,
             vegetarian,
             glutenFree
@@ -134,27 +132,27 @@ async function getRecipesPreview(recipes){
             image: image,
             readyInMinutes: readyInMinutes,
             popularity: aggregateLikes,
-            summary: analyzedInstructions,
             vegan: vegan,
             vegetarian: vegetarian,
             glutenFree: glutenFree
-
-        });
+    
+        });  
     });
     return ret_recipes;
 
 }
 
 async function addRecipeToDB(recipe_details){
+    let id = recipe_details.id;
     await DButils.execQuery(
         `INSERT INTO recipes VALUES ('${recipe_details.recipeID}', '${recipe_details.title}', '${recipe_details.recipeImage}',
-        '${recipe_details.readyInMinutes}', '${recipe_details.totalLikes}', '${recipe_details.vegen}', '${recipe_details.vegeterian}','${recipe_details.glutenFree}')`
+        '${recipe_details.readyInMinutes}', '${recipe_details.totalLikes}', '${recipe_details.vegen}', '${recipe_details.vegeterian}','${recipe_details.glutenFree}',
+        '${recipe_details.servings}','${recipe_details.analyzedInstructions}')`
       );
-      console.log("passed first insert");
       await DButils.execQuery(
         `INSERT INTO myrecipes VALUES ('${recipe_details.userID}', '${recipe_details.recipeID}')`
       );
-      console.log("passed second insert");
+      recipe_details.ingredients.map(async (ing) => await DButils.execQuery(`INSERT INTO ingredients VALUES ('${ing.name}', '${ing.amount}')`));
       return true;
 }
 async function getRandomThreeRecipes(){

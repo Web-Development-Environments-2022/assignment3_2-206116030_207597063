@@ -1,1 +1,0 @@
-INSERT INTO users VALUES(1,'yuval','yuval','felendler','israel','123456','yuvalf301@gmail.com')

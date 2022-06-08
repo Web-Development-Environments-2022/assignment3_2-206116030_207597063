@@ -1,15 +1,18 @@
-CREATE TABLE users(
-    ID int NOT NULL,
+DROP TABLE users;
+DROP TABLE recipes;
+CREATE TABLE Users(
+    UserID int NOT NULL,
     Username VARCHAR(255),
     Firstname VARCHAR(255),
     Lastname VARCHAR(255),
     Country VARCHAR(255),
     Passwd VARCHAR(255),
     Email VARCHAR(255),
-    PRIMARY KEY(ID) 
+    PRIMARY KEY(UserID) 
 );
-CREATE TABLE recipes(
-    ID VARCHAR(255) NOT NULL,
+
+CREATE TABLE Recipes(
+    RecipeID VARCHAR(255) NOT NULL,
     Title VARCHAR(255),
     RecipeImage Blob,
     ReadyInMinutes VARCHAR(255),
@@ -17,7 +20,9 @@ CREATE TABLE recipes(
     Vegen VARCHAR(255),
     Vegeterian VARCHAR(255),
     GlutenFree VARCHAR(255),
-    PRIMARY KEY(ID) 
+    Servings INT,
+    AnalyzedInstructions VARCHAR(255),
+    PRIMARY KEY(RecipeID) 
 );
 
 CREATE TABLE FavoriteRecipes(
@@ -30,4 +35,19 @@ CREATE TABLE MyRecipes(
     UserID int NOT NULL,
     RecipeID VARCHAR(255) NOT NULL,
     PRIMARY KEY(UserID,RecipeID) 
+);
+
+CREATE TABLE ViewdRecipes(
+    UserID int NOT NULL,
+    RecipeID VARCHAR(255) NOT NULL,
+    PRIMARY KEY(UserID,RecipeID) 
+);
+
+CREATE TABLE Ingredients(
+    RecipeID VARCHAR(255) NOT NULL,
+    IngrName VARCHAR(255) NOT NULL,
+    Amount INT,
+    Unit VARCHAR(255),
+    PRIMARY KEY(UserID,IngrName) 
+
 );
