@@ -5,21 +5,23 @@ const recipes_utils = require("./recipes_utils")
 
 
 async function getViewedRecipes(user_id){
-    const recipes_id = await DButils.execQuery(`select RecipeID from where viewdrecipes UserID='${user_id}'`);
+    const recipes_id = await DButils.execQuery(`select RecipeID from viewdrecipes where UserID='${user_id}'`);
     return recipes_id;
 }
 
 async function markAsViewed(user_id, recipe_id){
     await DButils.execQuery(`INSERT INTO viewdrecipes VALUES ('${user_id}','${recipe_id}')`);
+    return true;
 }
 
 async function markAsFavorite(user_id, recipe_id){
     await DButils.execQuery(`INSERT INTO favoriterecipes VALUES ('${user_id}','${recipe_id}')`);
+    return true;
 } 
 
 async function getFavoriteRecipes(user_id){
     const recipes_id = await DButils.execQuery(
-        `select RecipeID, Title, RecipeImage, ReadyInMinutes, TotalLikes,Vegen, Vegeterian, GlutenFree from
+        `select recipes.RecipeID, Title, RecipeImage, ReadyInMinutes, TotalLikes,Vegen, Vegeterian, GlutenFree from
         favoriterecipes inner join recipes on favoriterecipes.RecipeID=recipes.RecipeID where UserID='${user_id}'`);
     return recipes_id;
 }
@@ -28,7 +30,8 @@ async function getFavoriteRecipesSp(user_id){
     const recipes_id = await DButils.execQuery(
         `select RecipeID from favoriterecipes where favoriterecipes.RecipeID NOT LIKE 'd%'`);
     recipes_id_array = [];
-    recipes_id.map((element) => recipes_id_array.push(element.recipeID));
+    console.log(recipes_id);
+    recipes_id.map((element) => recipes_id_array.push(element.RecipeID));
     recipes_id_string= recipes_id_array.toString();
     const info = await axios.get(`${api_domain}/informationBulk`, {
         params: {
@@ -42,7 +45,7 @@ async function getFavoriteRecipesSp(user_id){
 }
 
 async function getMyRecipes(user_id){
-    const recipes_id = await DButils.execQuery(`select RecipeID, Title, RecipeImage, ReadyInMinutes, TotalLikes,Vegen, Vegeterian,
+    const recipes_id = await DButils.execQuery(`select myrecipes.RecipeID, Title, RecipeImage, ReadyInMinutes, TotalLikes,Vegen, Vegeterian,
      GlutenFree from myrecipes inner join recipes on myrecipes.RecipeID=recipes.RecipeID where UserID='${user_id}'`);
     return recipes_id;
 }

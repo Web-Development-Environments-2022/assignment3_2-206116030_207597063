@@ -65,8 +65,44 @@ async function search(qurey){
 
     }
     let results= response.data.results;
-    let previews= getRecipesPreview(results);
+    //let previews= getRecipesPreview(results);
+    let previews= getSearchRecipesPreview(results);
     return previews;
+
+}
+
+async function getSearchRecipesPreview(recipes){
+    let ret_recipes=[];
+    recipes.map((recipe)=>{
+        let recipe_details = recipe;
+        if(recipe.data){
+            recipe_details = recipe.data;
+        }
+        const{
+            id,
+            title,
+            readyInMinutes,
+            image,
+            aggregateLikes,
+            vegan,
+            vegetarian,
+            glutenFree,
+            analyzedInstructions
+        } = recipe_details;
+        ret_recipes.push({
+            id: id,
+            title: title,
+            image: image,
+            readyInMinutes: readyInMinutes,
+            popularity: aggregateLikes,
+            vegan: vegan,
+            vegetarian: vegetarian,
+            glutenFree: glutenFree,
+            analyzedInstructions: analyzedInstructions
+    
+        });  
+    });
+    return ret_recipes;
 
 }
 
@@ -144,6 +180,7 @@ async function getRecipesPreview(recipes){
 
 async function addRecipeToDB(recipe_details){
     let id = recipe_details.id;
+    console.log(recipe_details);
     await DButils.execQuery(
         `INSERT INTO recipes VALUES ('${recipe_details.recipeID}', '${recipe_details.title}', '${recipe_details.recipeImage}',
         '${recipe_details.readyInMinutes}', '${recipe_details.totalLikes}', '${recipe_details.vegen}', '${recipe_details.vegeterian}','${recipe_details.glutenFree}',
@@ -152,7 +189,8 @@ async function addRecipeToDB(recipe_details){
       await DButils.execQuery(
         `INSERT INTO myrecipes VALUES ('${recipe_details.userID}', '${recipe_details.recipeID}')`
       );
-      recipe_details.ingredients.map(async (ing) => await DButils.execQuery(`INSERT INTO ingredients VALUES ('${ing.name}', '${ing.amount}')`));
+      console.log(recipe_details.ingredients);
+      recipe_details.ingredients.map(async (ing) => await DButils.execQuery(`INSERT INTO ingredients VALUES ('${recipe_details.recipeID}','${ing.name}', '${ing.amount}','${ing.unit}')`));
       return true;
 }
 async function getRandomThreeRecipes(){

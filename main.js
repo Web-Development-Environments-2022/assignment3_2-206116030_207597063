@@ -6,10 +6,26 @@ var logger = require("morgan");
 const session = require("client-sessions");
 const DButils = require("./routes/utils/DButils");
 var cors = require('cors')
+// Put this statement near the top of your module
+var bodyParser = require('body-parser');
+var multer = require('multer');
+var forms = multer();
+
+
+
+// Put these statements before you define any routes.
 
 var app = express();
+
+// apply them
+
+app.use(bodyParser.json());
+app.use(forms.array()); 
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(logger("dev")); //logger
 app.use(express.json()); // parse application/json
+app.use(bodyParser.urlencoded());
+app.use(bodyParser.json());
 app.use(
   session({
     cookieName: "session", // the cookie key name

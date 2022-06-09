@@ -10,7 +10,7 @@ const recipe_utils = require("./utils/recipes_utils");
 router.use(async function (req, res, next) {
   if (req.session && req.session.user_id) {
     DButils.execQuery("SELECT UserID FROM users").then((users) => {
-      if (users.find((x) => x.user_id === req.session.user_id)) {
+      if (users.find((x) => x.UserID === req.session.user_id)) {
         req.user_id = req.session.user_id;
         next();
       }
@@ -29,6 +29,8 @@ router.use(async function (req, res, next) {
     const recipes_id = await user_utils.getViewedRecipes(user_id);
     res.status(200).send(recipes_id);
   } catch(error){
+    console.log(error);
+    res.sendStatus(500);
   }
 });
 
@@ -39,9 +41,14 @@ router.post('/viewed', async (req,res,next) => {
   try{
     const user_id = req.session.user_id;
     const recipe_id = req.body.recipeId;
-    user_utils.markAsViewed(user_id,recipe_id).then(res.status(200));
+    console.log("starting");
+    const bool= await user_utils.markAsViewed(user_id,recipe_id)
+    console.log("finished");
+    res.status(200).send("The Recipe successfully saved as viewed");
     } catch(error){
-    next(error);
+      console.log(error);
+      res.sendStatus(500);
+
   }
 })
 
@@ -51,10 +58,14 @@ router.post('/viewed', async (req,res,next) => {
  router.post('/favorites', async (req,res,next) => {
   try{
     const user_id = req.session.user_id;
+    console.log(user_id);
     const recipe_id = req.body.recipeId;
-    user_utils.markAsFavorite(user_id,recipe_id).then(res.status(200).send("The Recipe successfully saved as favorite"));
+    await user_utils.markAsFavorite(user_id,recipe_id)
+    res.status(200).send("The Recipe successfully saved as favorite");
     } catch(error){
-    next(error);
+      console.log(error);
+      res.sendStatus(500);
+
   }
 })
 
@@ -90,6 +101,9 @@ router.get('/favorites', async (req,res,next) => {
     })); //extracting the recipe ids from sp into array
     res.status(200).send(recipes_id_array);
   } catch(error){
+    console.log(error);
+    res.sendStatus(500);
+
   }
 });
 
@@ -110,7 +124,9 @@ router.get('/myRecipes', async (req,res,next) => {
     })); //extracting the recipe ids into array
     res.status(200).send(recipes_id_array);
   } catch(error){
-    next(error); 
+    console.log(error);
+    res.sendStatus(500);
+
   }
 });
 
