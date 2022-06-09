@@ -3,8 +3,14 @@ var router = express.Router();
 const MySql = require("../routes/utils/MySql");
 const DButils = require("../routes/utils/DButils");
 const bcrypt = require("bcrypt");
-var id=0;
+var id=0; //counter for the users id
 
+
+/**
+ * Save the new user in the DB 
+ * Check that the username is not already exist
+ * Hash the user password before saving in the DB
+ */
 router.post("/Register", async (req, res, next) => {
   try {
     let user_details = {
@@ -18,20 +24,22 @@ router.post("/Register", async (req, res, next) => {
     }
     let users = [];
     users = await DButils.execQuery("SELECT username from users");
-    console.log(users);
 
+    // check the username does not already exist
     if (users.find((x) => x.username === user_details.username))
       throw { status: 409, message: "Username taken" };
 
-    // add the new username
+    // hash the password
     let hash_password = bcrypt.hashSync(
       user_details.password,
       parseInt(process.env.bcrypt_saltRounds)
     );
+    // save the user details
     await DButils.execQuery(
       `INSERT INTO users VALUES ('${id}','${user_details.username}', '${user_details.firstname}', '${user_details.lastname}',
       '${user_details.country}', '${hash_password}', '${user_details.email}')`
     );
+    // update global counter 
     id = id+1;
     res.status(201).send({ message: "user created", success: true });
   } catch (error) {
@@ -40,6 +48,10 @@ router.post("/Register", async (req, res, next) => {
   }
 });
 
+
+/**
+ * Start a new session with the user if deatils are valid
+ */
 router.post("/Login", async (req, res, next) => {
   try {
     // check that username exists
@@ -72,6 +84,10 @@ router.post("/Login", async (req, res, next) => {
   }
 });
 
+
+/**
+ * Logout the user and reset the the session
+ */
 router.post("/Logout", function (req, res) {
   req.session.reset(); // reset the session info --> send cookie when  req.session == undefined!!
   res.send({ success: true, message: "logout succeeded" });

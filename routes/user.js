@@ -21,7 +21,7 @@ router.use(async function (req, res, next) {
 });
 
 /**
- * This path returns the viewed recipes that were viewed by the logged-in user
+ * Returns the viewed recipes that were viewed by the logged-in user
  */
  router.get('/viewed', async (req,res,next) => {
   try{
@@ -35,15 +35,13 @@ router.use(async function (req, res, next) {
 });
 
 /**
- * This path gets body with recipeId and save this recipe in the viewd list of the logged-in user
+ * Saves <user_id, recipe_id> pair in the viewedRecipes table 
  */
 router.post('/viewed', async (req,res,next) => {
   try{
     const user_id = req.session.user_id;
     const recipe_id = req.body.recipeId;
-    console.log("starting");
-    const bool= await user_utils.markAsViewed(user_id,recipe_id)
-    console.log("finished");
+    await user_utils.markAsViewed(user_id,recipe_id)
     res.status(200).send("The Recipe successfully saved as viewed");
     } catch(error){
       console.log(error);
@@ -53,7 +51,7 @@ router.post('/viewed', async (req,res,next) => {
 })
 
 /**
- * This path gets body with recipeId and save this recipe in the favorites list of the logged-in user
+ * Saves <user_id, recipe_id> pair in the favoriteRecipes table 
  */
  router.post('/favorites', async (req,res,next) => {
   try{
@@ -71,7 +69,7 @@ router.post('/viewed', async (req,res,next) => {
 
 
 /**
- * This path returns the favorites recipes that were saved by the logged-in user
+ * Returns the favorites recipes that were saved by the logged-in user
  */
 router.get('/favorites', async (req,res,next) => {
   try{
@@ -107,6 +105,10 @@ router.get('/favorites', async (req,res,next) => {
   }
 });
 
+
+/**
+ * Returnes the previews of the recipes the user has added and saved in the DB
+ */
 router.get('/myRecipes', async (req,res,next) => {
   try{
     const user_id = req.session.user_id;

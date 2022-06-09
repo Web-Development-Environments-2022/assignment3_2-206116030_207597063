@@ -1,12 +1,13 @@
 var express = require("express");
 var router = express.Router();
-var id=0;
+var id=0; //counter for the users id
 const recipes_utils = require("./utils/recipes_utils");
 
 router.get("/", (req, res) => res.send("im here"));
 
+
 /**
- * Returns a recipes preview that matches the query
+ * Returns recipes previews that matches the query
  */
 router.get("/search" , async(req, res) => {
   const query = req.query;
@@ -19,8 +20,10 @@ router.get("/search" , async(req, res) => {
 
   
 });
+
+
 /**
- * Returns a 3 random recipes preview
+ * Returns 3 random recipes previews
  */
 router.get("/random", async (req, res , next) => {
   try{
@@ -30,9 +33,13 @@ router.get("/random", async (req, res , next) => {
     res.sendStatus(404);
 
   }
-
 });
 
+
+
+/**
+ * Saves a new recipe in the DB
+ */
 router.post("/addRecipe", async (req, res) =>{
   try{
     let recipe_details = {
@@ -64,9 +71,9 @@ router.post("/addRecipe", async (req, res) =>{
 }
 })
 
-// /**
-//  * Returns a full details of a recipe by its id
-//  */
+/**
+ * Returns full details of a recipe by id
+ */
 router.get("/:recipeId", async (req, res, next) => {
   try {
     const recipe = await recipes_utils.getRecipeFullDetails(req.params.recipeId);

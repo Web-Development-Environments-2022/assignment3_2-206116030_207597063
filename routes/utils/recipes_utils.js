@@ -23,20 +23,26 @@ async function getRecipeInformation(recipe_id) {
     }
      
 }
-async function search(qurey){
-    const name = qurey.name;
-    const amount = qurey.amount;
+
+
+/**
+ * Get recipes preview according to the search query from the external API
+ * @param {*} query - the query to search with on the external API
+ */
+async function search(query){
+    const name = query.name;
+    const amount = query.amount;
     // 5 10 15
-    const filter = qurey.filter;
+    const filter = query.filter;
     // 0 | 1
-    const sortBy= qurey.sort;
+    const sortBy= query.sort;
     // popularity | time
     var response;
 
     if( filter == 1 ){
-        const cuisine = qurey.cuisine;
-        const diet = qurey.diet;
-        const intolerances = qurey.intolerances;
+        const cuisine = query.cuisine;
+        const diet = query.diet;
+        const intolerances = query.intolerances;
         response = await axios.get(`${api_domain}/complexSearch`, {
             params: {
                 query:name,
@@ -71,6 +77,11 @@ async function search(qurey){
 
 }
 
+
+/**
+ * Get recipes list from the search function and return the preview of all the recipes
+ * @param {*} recipes - array of recipes which came back from the search query
+ */
 async function getSearchRecipesPreview(recipes){
     let ret_recipes=[];
     recipes.map((recipe)=>{
@@ -106,6 +117,10 @@ async function getSearchRecipesPreview(recipes){
 
 }
 
+
+/**
+ * Gets 20 random recipes from the spooncular api
+ */
 async function getRandomRecipes(){
     const response = await axios.get(`${api_domain}/random`,{
         params: {
@@ -116,35 +131,11 @@ async function getRandomRecipes(){
     return response;
 }
 
-//need to check this function
-async function getRecipesFromDB(recipes){
-    let ret=[];
-    recipes.map(async (recipe_id)=>{
-        const recipe = await DButils.execQuery(`select * from recipes where RecipeID='${recipe_id}'`);
-        const {
-            ID,
-            Title,
-            ReadyInMinutes,
-            RecipeImage,
-            TotalLikes,
-            Vegen,
-            Vegeterian,
-            GlutenFree
-        } = recipe;
-        ret.push({
-            id: ID,
-            title: Title,
-            image: RecipeImage,
-            readyInMinutes: ReadyInMinutes,
-            popularity: TotalLikes,
-            vegan: Vegen,
-            vegetarian: Vegeterian,
-            glutenFree: GlutenFree
-        })
-    });
-    return ret;
-}
 
+/**
+ * returns a preivew of all the recipes recieved
+ * @param {*} recipes - array of recipes from which we will extract and return previews
+ */
 async function getRecipesPreview(recipes){
     let ret_recipes=[];
     recipes.map((recipe)=>{
@@ -178,9 +169,14 @@ async function getRecipesPreview(recipes){
 
 }
 
+
+/**
+ * Add a new recipe to the database with all his inforamtions and ingredients
+ * Saving user-recipe pair in a different table to know for each user the recipes he added
+ * @param {*} recipe_details - json with the new recipe details
+ */
 async function addRecipeToDB(recipe_details){
     let id = recipe_details.id;
-    console.log(recipe_details);
     await DButils.execQuery(
         `INSERT INTO recipes VALUES ('${recipe_details.recipeID}', '${recipe_details.title}', '${recipe_details.recipeImage}',
         '${recipe_details.readyInMinutes}', '${recipe_details.totalLikes}', '${recipe_details.vegen}', '${recipe_details.vegeterian}','${recipe_details.glutenFree}',
@@ -189,10 +185,14 @@ async function addRecipeToDB(recipe_details){
       await DButils.execQuery(
         `INSERT INTO myrecipes VALUES ('${recipe_details.userID}', '${recipe_details.recipeID}')`
       );
-      console.log(recipe_details.ingredients);
       recipe_details.ingredients.map(async (ing) => await DButils.execQuery(`INSERT INTO ingredients VALUES ('${recipe_details.recipeID}','${ing.name}', '${ing.amount}','${ing.unit}')`));
       return true;
 }
+
+
+/**
+ * Gets 3 random recipes from the spooncular api and return them as previwes 
+ */
 async function getRandomThreeRecipes(){
     let random_recipes= await getRandomRecipes();
     let filtered_recipes= random_recipes.data.recipes.filter((recipe) => (recipe.instructions != "") && (recipe.image && recipe.aggregateLikes && recipe.vegan && recipe.vegetarian && recipe.glutenFree))
@@ -203,6 +203,11 @@ async function getRandomThreeRecipes(){
     return preview;
 }
 
+
+/**
+ * return recipes full data according to the id entered
+ * @param {*} recipe_id - the id of the recipe which we want to get his full details
+ */
 async function getRecipeFullDetails(recipe_id) {
     let recipe_info = await getRecipeInformation(recipe_id);
     if(recipe_id.startsWith('d')){
@@ -211,30 +216,58 @@ async function getRecipeFullDetails(recipe_id) {
     else return recipe_info.data;
 }
 
-async function getRecipeDetails(recipe_id) {
-    let recipe_info = await getRecipeInformation(recipe_id);
-    let { id, title, readyInMinutes, image, aggregateLikes, vegan, vegetarian, glutenFree } = recipe_info.data;
+// async function getRecipeDetails(recipe_id) {
+//     let recipe_info = await getRecipeInformation(recipe_id);
+//     let { id, title, readyInMinutes, image, aggregateLikes, vegan, vegetarian, glutenFree } = recipe_info.data;
 
-    return {
-        id: id,
-        title: title,
-        readyInMinutes: readyInMinutes,
-        image: image,
-        popularity: aggregateLikes,
-        vegan: vegan,
-        vegetarian: vegetarian,
-        glutenFree: glutenFree,
+//     return {
+//         id: id,
+//         title: title,
+//         readyInMinutes: readyInMinutes,
+//         image: image,
+//         popularity: aggregateLikes,
+//         vegan: vegan,
+//         vegetarian: vegetarian,
+//         glutenFree: glutenFree,
         
-    }
-}
+//     }
+// }
 
 
+// //need to check this function
+// async function getRecipesFromDB(recipes){
+//     let ret=[];
+//     recipes.map(async (recipe_id)=>{
+//         const recipe = await DButils.execQuery(`select * from recipes where RecipeID='${recipe_id}'`);
+//         const {
+//             ID,
+//             Title,
+//             ReadyInMinutes,
+//             RecipeImage,
+//             TotalLikes,
+//             Vegen,
+//             Vegeterian,
+//             GlutenFree
+//         } = recipe;
+//         ret.push({
+//             id: ID,
+//             title: Title,
+//             image: RecipeImage,
+//             readyInMinutes: ReadyInMinutes,
+//             popularity: TotalLikes,
+//             vegan: Vegen,
+//             vegetarian: Vegeterian,
+//             glutenFree: GlutenFree
+//         })
+//     });
+//     return ret;
+// }
 
-exports.getRecipeDetails = getRecipeDetails;
+
 exports.getRandomThreeRecipes = getRandomThreeRecipes;
 exports.search = search;
 exports.getRecipeFullDetails = getRecipeFullDetails;
-exports.getRecipesFromDB = getRecipesFromDB;
 exports.addRecipeToDB = addRecipeToDB;
-exports.getRecipesPreview = getRecipesPreview;
+//exports.getRecipesFromDB = getRecipesFromDB;
+
 

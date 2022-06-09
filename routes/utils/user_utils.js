@@ -3,29 +3,56 @@ const axios = require("axios");
 const api_domain = "https://api.spoonacular.com/recipes";
 const recipes_utils = require("./recipes_utils")
 
-
+/**
+ * returns the ids of the recipes the user has viewed
+ * @param {*} user_id - the id of the user we want to get his viewed recipes id
+ */
 async function getViewedRecipes(user_id){
     const recipes_id = await DButils.execQuery(`select RecipeID from viewdrecipes where UserID='${user_id}'`);
     return recipes_id;
 }
 
+
+/**
+ * Saves <user_id,recipe_id> pair in the viewed table in the DB 
+ * @param {*} user_id - the id of the user 
+ * @param {*} recipe_id - the id of the recipe the user viewed
+ */
 async function markAsViewed(user_id, recipe_id){
     await DButils.execQuery(`INSERT INTO viewdrecipes VALUES ('${user_id}','${recipe_id}')`);
     return true;
 }
 
+
+/**
+ * Saves <user_id,recipe_id> pair in the favorites table in the DB 
+ * @param {*} user_id - the id of the user 
+ * @param {*} recipe_id - the id of the recipe the user saved
+ */
 async function markAsFavorite(user_id, recipe_id){
     await DButils.execQuery(`INSERT INTO favoriterecipes VALUES ('${user_id}','${recipe_id}')`);
     return true;
 } 
 
+
+/**
+ * returns the preview of the recipes which the user saved as favorite
+ * Only the recipes which saved in the DB
+ * @param {*} user_id - the id of the user 
+ */
 async function getFavoriteRecipes(user_id){
-    const recipes_id = await DButils.execQuery(
+    const recipes = await DButils.execQuery(
         `select recipes.RecipeID, Title, RecipeImage, ReadyInMinutes, TotalLikes,Vegen, Vegeterian, GlutenFree from
         favoriterecipes inner join recipes on favoriterecipes.RecipeID=recipes.RecipeID where UserID='${user_id}'`);
-    return recipes_id;
+    return recipes;
 }
 
+
+/**
+ * returns the preview of the recipes which the user saved as favorite
+ * Only the recipes from spooncular
+ * @param {*} user_id - the id of the user 
+ */
 async function getFavoriteRecipesSp(user_id){
     const recipes_id = await DButils.execQuery(
         `select RecipeID from favoriterecipes where favoriterecipes.RecipeID NOT LIKE 'd%'`);
@@ -44,15 +71,22 @@ async function getFavoriteRecipesSp(user_id){
     return ret;
 }
 
+
+/**
+ * returns a preivew of all the recipes the user created
+ * @param {*} user_id - the id of the user 
+ */
 async function getMyRecipes(user_id){
-    const recipes_id = await DButils.execQuery(`select myrecipes.RecipeID, Title, RecipeImage, ReadyInMinutes, TotalLikes,Vegen, Vegeterian,
+    const recipes = await DButils.execQuery(`select myrecipes.RecipeID, Title, RecipeImage, ReadyInMinutes, TotalLikes,Vegen, Vegeterian,
      GlutenFree from myrecipes inner join recipes on myrecipes.RecipeID=recipes.RecipeID where UserID='${user_id}'`);
-    return recipes_id;
+    return recipes;
 }
 
+
+
+exports.getMyRecipes = getMyRecipes;
 exports.markAsFavorite = markAsFavorite;
 exports.getFavoriteRecipes = getFavoriteRecipes;
-exports.getMyRecipes = getMyRecipes;
 exports.getFavoriteRecipesSp = getFavoriteRecipesSp;
 exports.getViewedRecipes = getViewedRecipes;
 exports.markAsViewed = markAsViewed;
