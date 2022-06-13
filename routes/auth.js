@@ -70,10 +70,8 @@ router.post("/Login", async (req, res, next) => {
     }
 
     // Set cookie
-    console.log("set cookie");
-    console.log(user);
     req.session.user_id = user.UserID;
-    console.log(req.session.user_id);
+    req.session.search='no search';
 
 
     // return cookie

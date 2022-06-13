@@ -1,5 +1,4 @@
-DROP TABLE users;
-DROP TABLE recipes;
+
 CREATE TABLE Users(
     UserID int NOT NULL,
     Username VARCHAR(255),

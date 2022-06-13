@@ -96,7 +96,7 @@ router.get('/favorites', async (req,res,next) => {
       vegen : element.vegan,
       vegeterian : element.vegetarian,
       glutenFree : element.glutenFree
-    })); //extracting the recipe ids from sp into array
+    })); //extracting the recipe ids from external API into array
     res.status(200).send(recipes_id_array);
   } catch(error){
     console.log(error);

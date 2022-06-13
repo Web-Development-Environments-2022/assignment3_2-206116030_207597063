@@ -11,9 +11,36 @@ router.get("/", (req, res) => res.send("im here"));
  */
 router.get("/search" , async(req, res) => {
   const query = req.query;
+  req.session.search= query;
   try{
     let search_results= await recipes_utils.search(query);
     res.send(search_results);
+  }catch(error){
+    res.sendStatus(404);
+  }
+
+  
+});
+
+/**
+ * Returns recipes search filters to be saved in the client
+ */
+ router.get("/searchParam" , async(req, res) => {
+  try{
+    let ans=[];
+    let cuisines=['African', 'American', 'British', 'Cajun', 'Caribbean', 'Chinese', 'Eastern European', 'European', 'French',
+    'German', 'Greek', 'Indian', 'Irish', 'Italian', 'Japanese', 'Jewish', 'Korean', 'Latin American', 'Mediterranean',
+    'Mexican','Middle Eastern','Nordic','Southern','Spanish','Thai','Vietnamese'];
+
+    let diet= ['Gluten Free','Ketogenic','Vegetarian','Lacto-Vegetarian','Ovo-Vegetarian','Vegan','Pescetarian','Paleo','Primal','Low FODMAP','Whole30'];
+
+    let intolerances = ['Dairy','Egg','Vegetarian','Gluten','Grain','Peanut','Seafood','Sesame','Shellfish','Soy','Sulfite','Tree Nut','Wheat'];
+
+    ans.push(cuisines);
+    ans.push(diet);
+    ans.push(intolerances);
+
+    res.send(ans);
   }catch(error){
     res.sendStatus(404);
   }
