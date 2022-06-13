@@ -54,8 +54,8 @@ async function markAsFavorite(user_id, recipe_id){
       image : element.RecipeImage,
       readyInMinutes : element.ReadyInMinutes,
       popularity : element.TotalLikes,
-      vegen : element.Vegen,
-      vegeterian : element.Vegeterian,
+      vegan : element.Vegen,
+      vegetarian : element.Vegeterian,
       glutenFree : element.GlutenFree
     })); //extracting the recipe ids from db into array
     return recipes_array;

@@ -73,7 +73,7 @@ router.use(async function (req, res, next) {
 /**
  * Saves <user_id, recipe_id> pair in the viewedRecipes table 
  */
-router.post('/viewed', async (req,res,next) => {
+router.post('/viewedPost', async (req,res,next) => {
   try{
     const user_id = req.session.user_id;
     const recipe_id = req.body.recipeId;
@@ -89,7 +89,7 @@ router.post('/viewed', async (req,res,next) => {
 /**
  * Saves <user_id, recipe_id> pair in the favoriteRecipes table 
  */
- router.post('/favorites', async (req,res,next) => {
+ router.post('/favoritesPost', async (req,res,next) => {
   try{
     const user_id = req.session.user_id;
     const recipe_id = req.body.recipeId;

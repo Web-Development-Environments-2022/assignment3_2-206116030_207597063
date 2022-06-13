@@ -9,7 +9,10 @@ const api_domain = "https://api.spoonacular.com/recipes";
  */
 async function getRecipeInformation(recipe_id) {
     if(recipe_id.startsWith('d')){
-        const ret = await DButils.execQuery(`select * from recipes where RecipeID='${recipe_id}'`);
+        const ret = await DButils.execQuery(`select RecipeID as id, Title as title,
+         ReadyInMinutes as readyInMinutes, RecipeImage as image, TotalLikes as popularity, 
+         Vegen as vegan, Vegeterian as vegetarian, GlutenFree as glutenFree from recipes 
+         where RecipeID='${recipe_id}'`);
         return ret;
     }
     else{
