@@ -1,0 +1,628 @@
+---
+openapi: 3.0.0
+info:
+  title: recipes
+  description: |
+    This is a server where you can create and share your recipes with other users.
+    you can find the best recipes for you and save them for later.
+  contact:
+    email: yuvalf301@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/amitpart96/recipes/1.0.0
+  description: SwaggerHub API Auto Mocking
+tags:
+- name: users
+  description: user details
+- name: recipes
+  description: Recipes stored in the system
+- name: auth
+  description: login and registration
+paths:
+  /auth/Register:
+    post:
+      tags:
+      - auth
+      summary: A new user from the client is added to the server.
+      description: A JSON object contains all the details about the new user.
+      requestBody:
+        description: user to add
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        "201":
+          description: A new user has been created
+        "409":
+          description: Username already exists.
+        "500":
+          description: Fault
+  /auth/Login:
+    post:
+      tags:
+      - auth
+      summary: logs user into the system.
+      description: A JSON object contains username and password for verification.
+      requestBody:
+        description: user verification
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/login'
+        required: true
+      responses:
+        "200":
+          description: Login succeeded
+        "401":
+          description: Username or Password incorrect
+        "500":
+          description: Fault
+  /auth/Logout:
+    post:
+      tags:
+      - auth
+      summary: logs user into the system.
+      description: A JSON object contains username and password for verification.
+      requestBody:
+        description: user verification
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/login'
+        required: true
+      responses:
+        "200":
+          description: Logout succeeded
+  /recipes/search:
+    get:
+      tags:
+      - recipes
+      summary: Get recipe's that match the search query from the server
+      description: Get from the client a query with all the details
+      parameters:
+      - name: name
+        in: query
+        description: The recipe name
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: amount
+        in: query
+        description: The amount of results to retrive from the server
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: number
+          default: 5
+          enum:
+          - 5
+          - 10
+          - 15
+      - name: filter
+        in: query
+        description: (0=without / 1=with) filter
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: number
+          default: 0
+          enum:
+          - 0
+          - 1
+      - name: diet
+        in: query
+        description: Spiceal diet recipes
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          default: None
+          enum:
+          - None
+          - Gluten Free
+          - Ketogenic
+          - Vegetarian
+          - Lacto-Vegetarian
+          - Ovo-Vegetarian
+          - Vegan
+          - Pescetarian
+          - Paleo
+          - Primal
+          - Low FODMAP
+          - Whole30
+      - name: cuisine
+        in: query
+        description: the origin of the recipe
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          default: None
+          enum:
+          - None
+          - African
+          - American
+          - British
+          - Cajun
+          - Chinese
+          - Caribbean
+          - European
+          - French
+          - German
+          - Greek
+          - Indian
+          - Irish
+          - Italian
+          - Japanese
+          - Jewish
+          - Mexican
+          - Spanish
+      - name: intolerances
+        in: query
+        description: the user will spacify any intolerances so his recipes will not have it.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          default: None
+          enum:
+          - None
+          - Dairy
+          - Egg
+          - Gluten
+          - Peanut
+          - Grain
+          - Seafood
+          - Sesame
+          - Shellfish
+          - Soy
+          - Sulfite
+          - Tree Nut
+          - Wheat
+      - name: sort
+        in: query
+        description: sort by (popularity / time)
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          default: popularity
+          enum:
+          - popularity
+          - time
+      responses:
+        "200":
+          description: The recipe's data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recipe_search'
+        "404":
+          description: No results for given query
+  /recipes/searchParam:
+    get:
+      tags:
+      - recipes
+      summary: return all options for cuisines, diet, intolerances.
+      responses:
+        "200":
+          description: The options
+          content:
+            application/json:
+              schema:
+                type: array
+                example:
+                - - African
+                  - American
+                - - Gluten Free
+                  - Ketogenic
+                - - Dairy
+                  - Egg
+                items:
+                  type: array
+                  items:
+                    type: string
+        "404":
+          description: No param found
+  /recipes/random:
+    get:
+      tags:
+      - recipes
+      summary: Returns 3 random recipes previews from the server.
+      responses:
+        "200":
+          description: The 3 random recipes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recipe_header'
+        "404":
+          description: No recipes found
+  /recipe/addRecipe:
+    post:
+      tags:
+      - recipes
+      summary: Adding a new recipe by registered user to the server.
+      description: A JSON object contains all the details about the new recipe.
+      requestBody:
+        description: recipe to add
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/recipe'
+        required: true
+      responses:
+        "201":
+          description: recipe created
+        "400":
+          description: Wrong input parameters
+  /recipes/:recipeId{recipeId}:
+    get:
+      tags:
+      - recipes
+      summary: Get recipe's data from the server.
+      description: Get from the client a recipe's id and returns recipe's data.
+      parameters:
+      - name: recipeId
+        in: path
+        description: The recipe id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The recipe's data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recipeId'
+        "404":
+          description: Recipe not found
+  /recipe/getfamilyRecipes:
+    get:
+      tags:
+      - recipes
+      summary: Get family recipes data from the server.
+      description: Get from the client a request and returns family recipes data.
+      responses:
+        "200":
+          description: The family recipes data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recipe'
+  /user/viewed3:
+    get:
+      tags:
+      - users
+      summary: Get 3 last view recipes by user from the server.
+      description: returns 3 last view recipes by user.
+      responses:
+        "200":
+          description: The 3 last view recieps by user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recipe_header'
+        "404":
+          description: User not found
+        "500":
+          description: Server error
+  /user/viewed:
+    get:
+      tags:
+      - users
+      summary: Get all ids view recipes by user from the server.
+      description: returns all ids view recipes by user.
+      responses:
+        "200":
+          description: The all ids view recieps by user.
+          content:
+            application/json:
+              schema:
+                type: array
+                example:
+                - 200
+                - d3
+                - 102
+                - d55
+                - d14
+                items:
+                  type: string
+                  description: recipe id
+        "404":
+          description: User not found
+        "500":
+          description: Server error
+  /user/viewedPost:
+    post:
+      tags:
+      - users
+      summary: Saves <user_id, recipe_id> pair in the viewedRecipes table
+      description: add ids view recipes to viewedRecipes table with user id.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/recipeIDPost'
+        required: true
+      responses:
+        "200":
+          description: The Recipe successfully saved as viewed.
+        "404":
+          description: User not found
+        "500":
+          description: Server error
+  /user/favoritesPost:
+    post:
+      tags:
+      - users
+      summary: Updated user favorite recipes
+      description: This can only be done by the logged in user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/recipeIDPost'
+        required: true
+      responses:
+        "200":
+          description: The Recipe successfully saved as favorite
+        "404":
+          description: User not found
+        "500":
+          description: Server error
+  /user/favorites:
+    get:
+      tags:
+      - users
+      summary: Get user's favorites recipes data from the server.
+      description: Returns user's favorites recipes data
+      responses:
+        "200":
+          description: The user's favorites recipes data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recipe_header'
+        "404":
+          description: user not found
+        "500":
+          description: Server error
+  /user/myRecipes:
+    get:
+      tags:
+      - users
+      summary: Get user's recipes data from the server.
+      description: Returns user's recipes data (owner).
+      responses:
+        "200":
+          description: The user's owner recipes data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recipe_header'
+        "404":
+          description: user not found
+        "500":
+          description: Server error
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        username:
+          maxLength: 8
+          minLength: 3
+          type: string
+          description: username contains between 3 to 8 letters only
+          example: omeradam
+        firstName:
+          type: string
+          description: user's first name
+          example: Omer
+        lastName:
+          type: string
+          description: user's last name
+          example: Adam
+        country:
+          type: string
+          description: user's country
+          example: Israel
+        password:
+          maxLength: 10
+          minLength: 5
+          type: string
+          description: password contains between 5 to 10 chars, at least one of them is a number and a special char
+          format: password
+          example: oa123!
+        email:
+          type: string
+          description: user's email
+          format: email
+          example: a@gmail.com
+    login:
+      type: object
+      properties:
+        username:
+          type: string
+          example: omeradam
+        password:
+          type: string
+          format: password
+          example: oa123!
+    recipe:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Strawberry cake
+        recipeImage:
+          type: string
+          format: URL
+        readyInMinutes:
+          type: string
+          description: Preparation time in minutes.
+          example: "60"
+        vegen:
+          type: boolean
+          description: Is vegan? (true/false)
+          example: false
+        vegeterian:
+          type: boolean
+          description: Is vegetarian? (true/false)
+          example: false
+        glutenFree:
+          type: boolean
+          description: Is gluten free? (true/false)
+          example: false
+        servings:
+          type: number
+          description: How many servings?
+          example: 2
+        analyzedInstructions:
+          type: string
+          description: Analyzed instructions
+          example: put the pasta in the water.
+        ingredients:
+          type: array
+          items:
+            $ref: '#/components/schemas/recipe_ingredients'
+    recipe_header:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "10"
+        title:
+          type: string
+          example: Strawberry cake
+        image:
+          type: string
+          format: URL
+        readyInMinutes:
+          type: string
+          description: Preparation time in minutes.
+          example: "60"
+        popularity:
+          type: number
+          description: Number of likes the recipe recived from users
+          example: 500
+        vegan:
+          type: boolean
+          description: Is vegan? (true/false)
+          example: false
+        vegetarian:
+          type: boolean
+          description: Is vegetarian? (true/false)
+          example: false
+        glutenFree:
+          type: boolean
+          description: Is gluten free? (true/false)
+          example: false
+    recipe_search:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "10"
+        title:
+          type: string
+          example: Strawberry cake
+        image:
+          type: string
+          format: URL
+        readyInMinutes:
+          type: string
+          description: Preparation time in minutes.
+          example: "60"
+        popularity:
+          type: number
+          description: Number of likes the recipe recived from users
+          example: 500
+        vegan:
+          type: boolean
+          description: Is vegan? (true/false)
+          example: false
+        vegetarian:
+          type: boolean
+          description: Is vegetarian? (true/false)
+          example: false
+        glutenFree:
+          type: boolean
+          description: Is gluten free? (true/false)
+          example: false
+        analyzedInstructions:
+          type: string
+          description: Analyzed instructions
+          example: put the pasta in the water.
+    recipeId:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "10"
+        title:
+          type: string
+          example: Strawberry cake
+        readyInMinutes:
+          type: string
+          description: Preparation time in minutes.
+          example: "60"
+        image:
+          type: string
+          format: URL
+        popularity:
+          type: number
+          description: Number of likes the recipe recived from users
+          example: 500
+        vegan:
+          type: boolean
+          description: Is vegan? (true/false)
+          example: false
+        vegetarian:
+          type: boolean
+          description: Is vegetarian? (true/false)
+          example: false
+        glutenFree:
+          type: boolean
+          description: Is gluten free? (true/false)
+          example: false
+    recipeIDPost:
+      type: object
+      properties:
+        recipeId:
+          type: string
+          description: recipe id for add to favoriteRecipes table
+          example: "10"
+    recipe_ingredients:
+      type: object
+      properties:
+        name:
+          type: string
+          description: name's ingredient
+          example: onion
+        amount:
+          type: number
+          description: How many from this ingredient
+          example: 3
+        unit:
+          type: string
+          description: Unit of measure (kg,cups,Spoon,unit...)
+          example: unit
+      example: null
