@@ -35,29 +35,41 @@ async function markAsFavorite(user_id, recipe_id){
 } 
 
 
+
 /**
- * returns the preview of the recipes which the user saved as favorite
+ * returns the preview of the recipes which the user saved as View
  * Only the recipes which saved in the DB
  * @param {*} user_id - the id of the user 
  */
-async function getFavoriteRecipes(user_id){
+ async function getRecipesDB(user_id, table){
     const recipes = await DButils.execQuery(
         `select recipes.RecipeID, Title, RecipeImage, ReadyInMinutes, TotalLikes,Vegen, Vegeterian, GlutenFree from
-        favoriterecipes inner join recipes on favoriterecipes.RecipeID=recipes.RecipeID where UserID='${user_id}'`);
-    return recipes;
+        '${table}' inner join recipes on '${table}'.RecipeID=recipes.RecipeID where UserID='${user_id}'`);
+    
+    let recipes_array = [];
+    recipes_id.map((element) => recipes_array.push({
+      id : element.recipeID,
+      title : element.Title,
+      image : element.RecipeImage,
+      readyInMinutes : element.ReadyInMinutes,
+      popularity : element.TotalLikes,
+      vegen : element.Vegen,
+      vegeterian : element.Vegeterian,
+      glutenFree : element.GlutenFree
+    })); //extracting the recipe ids from db into array
+    return recipes_array;
 }
 
 
 /**
- * returns the preview of the recipes which the user saved as favorite
+ * returns the preview of the recipes which the user saved as view
  * Only the recipes from spooncular
  * @param {*} user_id - the id of the user 
  */
-async function getFavoriteRecipesSp(user_id){
+ async function getRecipesSp(user_id, table){
     const recipes_id = await DButils.execQuery(
-        `select RecipeID from favoriterecipes where favoriterecipes.RecipeID NOT LIKE 'd%'`);
+        `select RecipeID from '${table}' where '${table}'.RecipeID NOT LIKE 'd%' and UserID='${user_id}'`);
     recipes_id_array = [];
-    console.log(recipes_id);
     recipes_id.map((element) => recipes_id_array.push(element.RecipeID));
     recipes_id_string= recipes_id_array.toString();
     const info = await axios.get(`${api_domain}/informationBulk`, {
@@ -72,21 +84,11 @@ async function getFavoriteRecipesSp(user_id){
 }
 
 
-/**
- * returns a preivew of all the recipes the user created
- * @param {*} user_id - the id of the user 
- */
-async function getMyRecipes(user_id){
-    const recipes = await DButils.execQuery(`select myrecipes.RecipeID, Title, RecipeImage, ReadyInMinutes, TotalLikes,Vegen, Vegeterian,
-     GlutenFree from myrecipes inner join recipes on myrecipes.RecipeID=recipes.RecipeID where UserID='${user_id}'`);
-    return recipes;
-}
 
 
 
-exports.getMyRecipes = getMyRecipes;
 exports.markAsFavorite = markAsFavorite;
-exports.getFavoriteRecipes = getFavoriteRecipes;
-exports.getFavoriteRecipesSp = getFavoriteRecipesSp;
 exports.getViewedRecipes = getViewedRecipes;
+exports.getRecipesSp = getRecipesSp;
+exports.getRecipesDB = getRecipesDB;
 exports.markAsViewed = markAsViewed;

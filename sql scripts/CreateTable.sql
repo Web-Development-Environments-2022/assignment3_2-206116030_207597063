@@ -47,6 +47,6 @@ CREATE TABLE Ingredients(
     IngrName VARCHAR(255) NOT NULL,
     Amount INT,
     Unit VARCHAR(255),
-    PRIMARY KEY(UserID,IngrName) 
+    PRIMARY KEY(RecipeID,IngrName) 
 
 );

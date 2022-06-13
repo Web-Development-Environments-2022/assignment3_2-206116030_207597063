@@ -1,7 +1,5 @@
 const axios = require("axios");
 const DButils = require("./DButils");
-const { response } = require("express");
-const req = require("express/lib/request");
 const api_domain = "https://api.spoonacular.com/recipes";
 
 
@@ -72,7 +70,6 @@ async function search(query){
 
     }
     let results= response.data.results;
-    //let previews= getRecipesPreview(results);
     let previews= getSearchRecipesPreview(results);
     return previews;
 
@@ -178,16 +175,16 @@ async function getRecipesPreview(recipes){
  */
 async function addRecipeToDB(recipe_details){
     let id = recipe_details.id;
+    recipe_details.ingredients.map(async (ing) => await DButils.execQuery(`INSERT INTO ingredients VALUES ('${recipe_details.recipeID}','${ing.name}', '${ing.amount}','${ing.unit}')`));
     await DButils.execQuery(
         `INSERT INTO recipes VALUES ('${recipe_details.recipeID}', '${recipe_details.title}', '${recipe_details.recipeImage}',
         '${recipe_details.readyInMinutes}', '${recipe_details.totalLikes}', '${recipe_details.vegen}', '${recipe_details.vegeterian}','${recipe_details.glutenFree}',
         '${recipe_details.servings}','${recipe_details.analyzedInstructions}')`
       );
-      await DButils.execQuery(
+    await DButils.execQuery(
         `INSERT INTO myrecipes VALUES ('${recipe_details.userID}', '${recipe_details.recipeID}')`
-      );
-      recipe_details.ingredients.map(async (ing) => await DButils.execQuery(`INSERT INTO ingredients VALUES ('${recipe_details.recipeID}','${ing.name}', '${ing.amount}','${ing.unit}')`));
-      return true;
+    );
+    return true;
 }
 
 
@@ -217,58 +214,15 @@ async function getRecipeFullDetails(recipe_id) {
     else return recipe_info.data;
 }
 
-// async function getRecipeDetails(recipe_id) {
-//     let recipe_info = await getRecipeInformation(recipe_id);
-//     let { id, title, readyInMinutes, image, aggregateLikes, vegan, vegetarian, glutenFree } = recipe_info.data;
 
-//     return {
-//         id: id,
-//         title: title,
-//         readyInMinutes: readyInMinutes,
-//         image: image,
-//         popularity: aggregateLikes,
-//         vegan: vegan,
-//         vegetarian: vegetarian,
-//         glutenFree: glutenFree,
-        
-//     }
-// }
-
-
-// //need to check this function
-// async function getRecipesFromDB(recipes){
-//     let ret=[];
-//     recipes.map(async (recipe_id)=>{
-//         const recipe = await DButils.execQuery(`select * from recipes where RecipeID='${recipe_id}'`);
-//         const {
-//             ID,
-//             Title,
-//             ReadyInMinutes,
-//             RecipeImage,
-//             TotalLikes,
-//             Vegen,
-//             Vegeterian,
-//             GlutenFree
-//         } = recipe;
-//         ret.push({
-//             id: ID,
-//             title: Title,
-//             image: RecipeImage,
-//             readyInMinutes: ReadyInMinutes,
-//             popularity: TotalLikes,
-//             vegan: Vegen,
-//             vegetarian: Vegeterian,
-//             glutenFree: GlutenFree
-//         })
-//     });
-//     return ret;
-// }
 
 
 exports.getRandomThreeRecipes = getRandomThreeRecipes;
 exports.search = search;
 exports.getRecipeFullDetails = getRecipeFullDetails;
 exports.addRecipeToDB = addRecipeToDB;
+exports.getRecipesPreview = getRecipesPreview;
+exports.getSearchRecipesPreview = getSearchRecipesPreview;
 //exports.getRecipesFromDB = getRecipesFromDB;
 
 

@@ -16,6 +16,7 @@ router.get("/search" , async(req, res) => {
     let search_results= await recipes_utils.search(query);
     res.send(search_results);
   }catch(error){
+    console.log(error);
     res.sendStatus(404);
   }
 
@@ -42,6 +43,7 @@ router.get("/search" , async(req, res) => {
 
     res.send(ans);
   }catch(error){
+    console.log(error);
     res.sendStatus(404);
   }
 
@@ -57,6 +59,7 @@ router.get("/random", async (req, res , next) => {
     let random_3_recipes = await recipes_utils.getRandomThreeRecipes();
     res.send(random_3_recipes);
   } catch (error) {
+    console.log(error);
     res.sendStatus(404);
 
   }
@@ -106,6 +109,7 @@ router.get("/:recipeId", async (req, res, next) => {
     const recipe = await recipes_utils.getRecipeFullDetails(req.params.recipeId);
     res.send(recipe);
   } catch (error) {
+    console.log(error);
     res.sendStatus(404);
   }
 });

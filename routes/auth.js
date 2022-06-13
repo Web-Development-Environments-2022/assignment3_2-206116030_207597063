@@ -1,6 +1,5 @@
 var express = require("express");
 var router = express.Router();
-const MySql = require("../routes/utils/MySql");
 const DButils = require("../routes/utils/DButils");
 const bcrypt = require("bcrypt");
 var id=0; //counter for the users id
