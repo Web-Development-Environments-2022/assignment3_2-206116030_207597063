@@ -37,18 +37,19 @@ async function markAsFavorite(user_id, recipe_id){
 
 
 /**
- * returns the preview of the recipes which the user saved as View
- * Only the recipes which saved in the DB
+ * returns the preview of the recipes which related to the user_id from one of 3 DB tabels
+ * favoritec , viewed and my recipes
  * @param {*} user_id - the id of the user 
+ * @param {*} table - the table to take the result from 
  */
  async function getRecipesDB(user_id, table){
     const recipes = await DButils.execQuery(
         `select recipes.RecipeID, Title, RecipeImage, ReadyInMinutes, TotalLikes,Vegen, Vegeterian, GlutenFree from
-        '${table}' inner join recipes on '${table}'.RecipeID=recipes.RecipeID where UserID='${user_id}'`);
+        ${table} inner join recipes on ${table}.RecipeID=recipes.RecipeID where UserID='${user_id}'`);
     
     let recipes_array = [];
-    recipes_id.map((element) => recipes_array.push({
-      id : element.recipeID,
+    recipes.map((element) => recipes_array.push({
+      id : element.RecipeID,
       title : element.Title,
       image : element.RecipeImage,
       readyInMinutes : element.ReadyInMinutes,
@@ -62,13 +63,13 @@ async function markAsFavorite(user_id, recipe_id){
 
 
 /**
- * returns the preview of the recipes which the user saved as view
+ * returns the preview of the recipes which the user saved in favorites or viewed
  * Only the recipes from spooncular
  * @param {*} user_id - the id of the user 
  */
  async function getRecipesSp(user_id, table){
     const recipes_id = await DButils.execQuery(
-        `select RecipeID from '${table}' where '${table}'.RecipeID NOT LIKE 'd%' and UserID='${user_id}'`);
+        `select RecipeID from ${table} where ${table}.RecipeID NOT LIKE 'd%' and UserID='${user_id}'`);
     recipes_id_array = [];
     recipes_id.map((element) => recipes_id_array.push(element.RecipeID));
     recipes_id_string= recipes_id_array.toString();

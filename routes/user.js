@@ -21,14 +21,27 @@ router.use(async function (req, res, next) {
 
 
 /**
- * Returns the favorites recipes that were saved by the logged-in user
+ * Returns the last 3 viewed recipes that were viewed by the logged-in user
  */
  router.get('/viewed3', async (req,res,next) => {
   try{
     const user_id = req.session.user_id;
     const recipes_id_db = await user_utils.getRecipesDB(user_id,"viewdrecipes");
     const recipes_id_sp = await user_utils.getRecipesSp(user_id,"viewdrecipes");
-    const merge_results= [recipes_id_db, recipes_id_sp]
+    var merge_results;
+    if(recipes_id_db.length > 0 && recipes_id_sp.length >0){
+      merge_results= [recipes_id_db, recipes_id_sp];
+      res.status(200).send(merge_results);
+    }
+    else if(recipes_id_db.length >0 ){
+      merge_results = recipes_id_db;
+
+    }
+    else{
+      merge_results = recipes_id_sp;
+
+    }
+
     if(merge_results.length >=3){
       res.status(200).send(merge_results[0],merge_results[1],merge_results[2]);
     }
@@ -44,7 +57,7 @@ router.use(async function (req, res, next) {
 
 
 /**
- * Returns the viewed recipes that were viewed by the logged-in user
+ * Returns the viewed recipes id`s that were viewed by the logged-in user
  */
  router.get('/viewed', async (req,res,next) => {
   try{
@@ -98,8 +111,17 @@ router.get('/favorites', async (req,res,next) => {
     const user_id = req.session.user_id;
     const recipes_id_db = await user_utils.getRecipesDB(user_id,"favoriterecipes");
     const recipes_id_sp = await user_utils.getRecipesSp(user_id,"favoriterecipes");
-    const merge_results= [recipes_id_db, recipes_id_sp]
-    res.status(200).send(merge_results);
+    if(recipes_id_db.length > 0 && recipes_id_sp.length >0){
+      const merge_results= [recipes_id_db, recipes_id_sp];
+      res.status(200).send(merge_results);
+    }
+    else if(recipes_id_db.length >0 ){
+      res.status(200).send(recipes_id_db);
+
+    }
+    else{
+      res.status(200).send(recipes_id_sp);
+    }
   } catch(error){
     console.log(error);
     res.sendStatus(500);
