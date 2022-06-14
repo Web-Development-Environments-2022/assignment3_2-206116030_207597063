@@ -38,12 +38,12 @@ router.post("/Register", async (req, res, next) => {
       `INSERT INTO users VALUES ('${id}','${user_details.username}', '${user_details.firstname}', '${user_details.lastname}',
       '${user_details.country}', '${hash_password}', '${user_details.email}')`
     );
-    // update global counter 
     id = id+1;
+    // update global counter 
     res.status(201).send({ message: "user created", success: true });
   } catch (error) {
     console.log(error);
-    res.sendStatus(500);
+    next();
   }
 });
 
@@ -53,6 +53,7 @@ router.post("/Register", async (req, res, next) => {
  */
 router.post("/Login", async (req, res, next) => {
   try {
+
     // check that username exists
     const users = await DButils.execQuery("SELECT username FROM users");
     if (!users.find((x) => x.username === req.body.username))
@@ -77,7 +78,7 @@ router.post("/Login", async (req, res, next) => {
     res.status(200).send({ message: "login succeeded", success: true });
   } catch (error) {
     console.log(error);
-    res.sendStatus(500);
+    next();
   }
 });
 

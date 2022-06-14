@@ -12,7 +12,8 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.0
 servers:
-- url: https://virtserver.swaggerhub.com/amitpart96/recipes/1.0.0
+# local:
+- url: "http://127.0.0.1:3000"
   description: SwaggerHub API Auto Mocking
 tags:
 - name: users
@@ -66,15 +67,8 @@ paths:
     post:
       tags:
       - auth
-      summary: logs user into the system.
-      description: A JSON object contains username and password for verification.
-      requestBody:
-        description: user verification
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/login'
-        required: true
+      summary: logs user out if the system.
+      description: clears user session with the server
       responses:
         "200":
           description: Logout succeeded
@@ -251,7 +245,7 @@ paths:
                 $ref: '#/components/schemas/recipe_header'
         "404":
           description: No recipes found
-  /recipe/addRecipe:
+  /recipes/addRecipe:
     post:
       tags:
       - recipes
@@ -269,7 +263,7 @@ paths:
           description: recipe created
         "400":
           description: Wrong input parameters
-  /recipes/:recipeId{recipeId}:
+  /recipes/{recipeId}:
     get:
       tags:
       - recipes
@@ -293,19 +287,7 @@ paths:
                 $ref: '#/components/schemas/recipeId'
         "404":
           description: Recipe not found
-  /recipe/getfamilyRecipes:
-    get:
-      tags:
-      - recipes
-      summary: Get family recipes data from the server.
-      description: Get from the client a request and returns family recipes data.
-      responses:
-        "200":
-          description: The family recipes data
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/recipe'
+
   /user/viewed3:
     get:
       tags:
@@ -432,11 +414,11 @@ components:
           type: string
           description: username contains between 3 to 8 letters only
           example: omeradam
-        firstName:
+        firstname:
           type: string
           description: user's first name
           example: Omer
-        lastName:
+        lastname:
           type: string
           description: user's last name
           example: Adam
@@ -625,4 +607,3 @@ components:
           type: string
           description: Unit of measure (kg,cups,Spoon,unit...)
           example: unit
-      example: null

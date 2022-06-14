@@ -43,7 +43,8 @@ router.use(async function (req, res, next) {
     }
 
     if(merge_results.length >=3){
-      res.status(200).send(merge_results[0],merge_results[1],merge_results[2]);
+      let ret=[merge_results[0],merge_results[1],merge_results[2]];
+      res.status(200).send(ret);
     }
     else{
       res.status(200).send(merge_results);
