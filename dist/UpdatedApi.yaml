@@ -403,6 +403,20 @@ paths:
           description: user not found
         "500":
           description: Server error
+
+  /recipes/getfamilyRecipes:
+    get:
+      tags:
+      - recipes
+      summary: Get family recipes data from the server.
+      description: Get from the client a request and returns family recipes data.
+      responses:
+        "200":
+          description: The family recipes data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recipe'  
 components:
   schemas:
     User:

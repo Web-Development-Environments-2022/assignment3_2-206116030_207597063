@@ -10,6 +10,21 @@ CREATE TABLE Users(
     PRIMARY KEY(UserID) 
 );
 
+CREATE TABLE ourFamilyRecipes(  
+    RecipeID INT NOT NULL AUTO_INCREMENT,
+    Title VARCHAR(255),
+    RecipeImage BLOB,
+    ReadyInMinutes VARCHAR(255),
+    TotalLikes VARCHAR(255),
+    Vegan VARCHAR(255),
+    vegeterian VARCHAR(255),
+    GlutenFree VARCHAR(255),
+    servings INT,
+    AnalyzedInstructions VARCHAR(255),
+    PRIMARY KEY(RecipeID)
+
+);
+
 CREATE TABLE Recipes(
     RecipeID VARCHAR(255) NOT NULL,
     Title VARCHAR(255),

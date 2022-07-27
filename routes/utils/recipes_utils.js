@@ -132,6 +132,16 @@ async function getRandomRecipes(){
     return response;
 }
 
+/**
+ * Gets our family recipes from the db
+ */
+ async function getOurFamilyRecipes(){
+    const ret = await DButils.execQuery(`select RecipeID as id, Title as title,
+         ReadyInMinutes as readyInMinutes, RecipeImage as image, TotalLikes as popularity, 
+         Vegen as vegan, Vegeterian as vegetarian, GlutenFree as glutenFree from ourfamilyrecipes`);
+        return ret;
+}
+
 
 /**
  * returns a preivew of all the recipes recieved
@@ -220,7 +230,7 @@ async function getRecipeFullDetails(recipe_id) {
 
 
 
-
+exports.getOurFamilyRecipes = getOurFamilyRecipes;
 exports.getRandomThreeRecipes = getRandomThreeRecipes;
 exports.search = search;
 exports.getRecipeFullDetails = getRecipeFullDetails;
