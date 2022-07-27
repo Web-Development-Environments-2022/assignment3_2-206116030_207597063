@@ -2,6 +2,8 @@ var express = require("express");
 var router = express.Router();
 var id=0; //counter for the users id
 const recipes_utils = require("./utils/recipes_utils");
+const user_utils = require("./utils/user_utils");
+
 
 router.get("/", (req, res) => res.send("im here"));
 
@@ -118,6 +120,12 @@ router.post("/addRecipe", async (req, res) =>{
 router.get("/:recipeId", async (req, res, next) => {
   try {
     const recipe = await recipes_utils.getRecipeFullDetails(req.params.recipeId);
+
+    //if the action done by signed in user then save the recipe as viewed
+    if(req.session.user_id){
+      await user_utils.markAsViewed(req.session.user_id,req.params.recipeId);
+    }
+    
     res.send(recipe);
   } catch (error) {
     console.log(error);
