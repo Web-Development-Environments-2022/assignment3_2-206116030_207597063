@@ -22,7 +22,20 @@ CREATE TABLE ourFamilyRecipes(
     servings INT,
     AnalyzedInstructions VARCHAR(255),
     PRIMARY KEY(RecipeID)
+);
 
+CREATE TABLE Family(
+    id int NOT NULL AUTO_INCREMENT,
+    ownRecipe VARCHAR(255),
+    RecipeImage VARCHAR(255),
+    whenPrepared VARCHAR(255),
+    ingredients VARCHAR(255),
+    AnalyzedInstructions VARCHAR(255),
+    servings INT,
+    Vegan VARCHAR(255),
+    vegeterian VARCHAR(255),
+    GlutenFree VARCHAR(255),
+    PRIMARY KEY(id)
 );
 
 CREATE TABLE Recipes(

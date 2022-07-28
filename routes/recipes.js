@@ -5,6 +5,15 @@ const recipes_utils = require("./utils/recipes_utils");
 
 router.get("/", (req, res) => res.send("im here"));
 
+router.get("/image" , async(req, res) => {
+  try{
+    res.sendFile("../images/frikase.jpeg");
+  }catch(error){
+    console.log(error);
+    res.sendStatus(404);
+  }
+});
+
 
 /**
  * Returns recipes previews that matches the query
