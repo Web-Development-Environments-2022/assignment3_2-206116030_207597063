@@ -191,7 +191,7 @@ async function addRecipeToDB(recipe_details){
     recipe_details.ingredients.map(async (ing) => await DButils.execQuery(`INSERT INTO ingredients VALUES ('${recipe_details.recipeID}','${ing.name}', '${ing.amount}','${ing.unit}')`));
     await DButils.execQuery(
         `INSERT INTO recipes VALUES ('${recipe_details.recipeID}', '${recipe_details.title}', '${recipe_details.recipeImage}',
-        '${recipe_details.readyInMinutes}', '${recipe_details.totalLikes}', '${recipe_details.vegen}', '${recipe_details.vegeterian}','${recipe_details.glutenFree}',
+        '${recipe_details.readyInMinutes}', '${recipe_details.totalLikes}', '${recipe_details.vegan}', '${recipe_details.vegeterian}','${recipe_details.glutenFree}',
         '${recipe_details.servings}','${recipe_details.analyzedInstructions}')`
       );
     await DButils.execQuery(

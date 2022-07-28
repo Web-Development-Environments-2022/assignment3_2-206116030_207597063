@@ -92,7 +92,7 @@ router.post("/addRecipe", async (req, res) =>{
     recipeImage: req.body.recipeImage,
     readyInMinutes: req.body.readyInMinutes,
     totalLikes: '0',
-    vegen: req.body.vegen,
+    vegan: req.body.vegan ,
     vegeterian: req.body.vegeterian,
     glutenFree: req.body.glutenFree,
     servings: req.body.servings,
@@ -122,10 +122,10 @@ router.get("/:recipeId", async (req, res, next) => {
     const recipe = await recipes_utils.getRecipeFullDetails(req.params.recipeId);
 
     //if the action done by signed in user then save the recipe as viewed
-    if(req.session.user_id){
+    if(req.session.user_id==0){
       await user_utils.markAsViewed(req.session.user_id,req.params.recipeId);
     }
-    
+
     res.send(recipe);
   } catch (error) {
     console.log(error);
