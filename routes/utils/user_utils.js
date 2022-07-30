@@ -48,7 +48,7 @@ async function markAsFavorite(user_id, recipe_id){
  */
  async function getRecipesDB(user_id, table){
     const recipes = await DButils.execQuery(
-        `select recipes.RecipeID, Title, RecipeImage, ReadyInMinutes, TotalLikes,Vegen, Vegeterian, GlutenFree from
+        `select recipes.RecipeID, Title, RecipeImage, ReadyInMinutes, TotalLikes,Vegan, Vegeterian, GlutenFree from
         ${table} inner join recipes on ${table}.RecipeID=recipes.RecipeID where UserID='${user_id}'`);
     
     let recipes_array = [];
@@ -58,7 +58,7 @@ async function markAsFavorite(user_id, recipe_id){
       image : element.RecipeImage,
       readyInMinutes : element.ReadyInMinutes,
       popularity : element.TotalLikes,
-      vegan : element.Vegen,
+      vegan : element.Vegan,
       vegetarian : element.Vegeterian,
       glutenFree : element.GlutenFree
     })); //extracting the recipe ids from db into array

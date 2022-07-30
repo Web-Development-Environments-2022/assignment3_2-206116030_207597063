@@ -475,7 +475,7 @@ components:
           type: string
           description: Preparation time in minutes.
           example: "60"
-        vegen:
+        vegan:
           type: boolean
           description: Is vegan? (true/false)
           example: false

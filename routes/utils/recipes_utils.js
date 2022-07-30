@@ -11,7 +11,7 @@ async function getRecipeInformation(recipe_id) {
     if(recipe_id.startsWith('d')){
         const ret = await DButils.execQuery(`select RecipeID as id, Title as title,
          ReadyInMinutes as readyInMinutes, RecipeImage as image, TotalLikes as aggregateLikes, 
-         Vegen as vegan, Vegeterian as vegetarian, GlutenFree as glutenFree, Servings as servings, pricePerServing from recipes 
+         Vegan as vegan, Vegeterian as vegetarian, GlutenFree as glutenFree, Servings as servings, pricePerServing from recipes 
          where RecipeID='${recipe_id}'`);
         const extendedIngredients = await DButils.execQuery(`select original from ingredients where RecipeID='${recipe_id}'`) 
         const analyzedInstructions = await DButils.execQuery(`select number, step from analyzedinstructions where RecipeID='${recipe_id}'`) 

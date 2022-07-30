@@ -44,7 +44,7 @@ CREATE TABLE Recipes(
     RecipeImage VARCHAR(255),
     ReadyInMinutes VARCHAR(255),
     TotalLikes VARCHAR(255),
-    Vegen INT,
+    Vegan INT,
     Vegeterian INT,
     GlutenFree INT,
     Servings INT,
