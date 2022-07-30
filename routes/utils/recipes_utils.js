@@ -10,10 +10,15 @@ const api_domain = "https://api.spoonacular.com/recipes";
 async function getRecipeInformation(recipe_id) {
     if(recipe_id.startsWith('d')){
         const ret = await DButils.execQuery(`select RecipeID as id, Title as title,
-         ReadyInMinutes as readyInMinutes, RecipeImage as image, TotalLikes as popularity, 
-         Vegen as vegan, Vegeterian as vegetarian, GlutenFree as glutenFree from recipes 
+         ReadyInMinutes as readyInMinutes, RecipeImage as image, TotalLikes as aggregateLikes, 
+         Vegen as vegan, Vegeterian as vegetarian, GlutenFree as glutenFree, Servings as servings, pricePerServing from recipes 
          where RecipeID='${recipe_id}'`);
-        return ret;
+        const extendedIngredients = await DButils.execQuery(`select original from ingredients where RecipeID='${recipe_id}'`) 
+        const analyzedInstructions = await DButils.execQuery(`select number, step from analyzedinstructions where RecipeID='${recipe_id}'`) 
+        ret[0]["extendedIngredients"] = extendedIngredients;
+        ret[0]["analyzedInstructions"] = analyzedInstructions;
+        console.log(ret);
+        return ret[0];
     }
     else{
         return await axios.get(`${api_domain}/${recipe_id}/information`, {
@@ -187,16 +192,29 @@ async function getRecipesPreview(recipes){
  * @param {*} recipe_details - json with the new recipe details
  */
 async function addRecipeToDB(recipe_details){
-    let id = recipe_details.id;
-    recipe_details.ingredients.map(async (ing) => await DButils.execQuery(`INSERT INTO ingredients VALUES ('${recipe_details.recipeID}','${ing.name}', '${ing.amount}','${ing.unit}')`));
+    console.log(recipe_details);
+    recipe_details.ingredients.map(async (ing) => await DButils.execQuery(`INSERT INTO ingredients VALUES (
+        '${recipe_details.recipeID}',
+        '${ing.name}',
+        '${ing.amount}',
+        '${ing.unit}',
+        '${ing.name} ' '${ing.amount}' ' ${ing.unit}')`
+        ));
     await DButils.execQuery(
         `INSERT INTO recipes VALUES ('${recipe_details.recipeID}', '${recipe_details.title}', '${recipe_details.recipeImage}',
         '${recipe_details.readyInMinutes}', '${recipe_details.totalLikes}', '${recipe_details.vegan}', '${recipe_details.vegeterian}','${recipe_details.glutenFree}',
-        '${recipe_details.servings}','${recipe_details.analyzedInstructions}')`
-      );
+        '${recipe_details.servings}','${recipe_details.pricePerServing}')`
+    );
     await DButils.execQuery(
         `INSERT INTO myrecipes VALUES ('${recipe_details.userID}', '${recipe_details.recipeID}')`
     );
+
+    recipe_details.analyzedInstructions.map(async (instruction) => await DButils.execQuery(`INSERT INTO analyzedInstructions VALUES (
+        '${recipe_details.recipeID}',
+        '${instruction.number}',
+        '${instruction.instruction}')`
+        ));
+
     console.log('myrecipes');
     return true;
 }

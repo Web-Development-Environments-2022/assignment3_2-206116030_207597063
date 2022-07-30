@@ -49,6 +49,7 @@ CREATE TABLE Recipes(
     GlutenFree INT,
     Servings INT,
     AnalyzedInstructions VARCHAR(255),
+    pricePerServing VARCHAR(255),
     PRIMARY KEY(RecipeID) 
 );
 
@@ -75,6 +76,13 @@ CREATE TABLE Ingredients(
     IngrName VARCHAR(255) NOT NULL,
     Amount INT,
     Unit VARCHAR(255),
+    original VARCHAR(255),
     PRIMARY KEY(RecipeID,IngrName) 
+);
 
+CREATE TABLE analyzedInstructions(
+    RecipeID VARCHAR(255) NOT NULL,
+    number INT NOT NULL,
+    step VARCHAR(255),
+    PRIMARY KEY(RecipeID,number) 
 );

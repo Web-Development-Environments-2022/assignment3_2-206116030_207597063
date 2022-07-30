@@ -106,7 +106,8 @@ router.post("/addRecipe", async (req, res) =>{
     glutenFree: req.body.glutenFree,
     servings: req.body.servings,
     analyzedInstructions: req.body.analyzedInstructions,
-    ingredients: req.body.ingredients
+    ingredients: req.body.ingredients,
+    pricePerServing: '1'
   }
   id=id+1;
   let bool = await recipes_utils.addRecipeToDB(recipe_details);
