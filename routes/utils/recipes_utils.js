@@ -193,30 +193,38 @@ async function getRecipesPreview(recipes){
  */
 async function addRecipeToDB(recipe_details){
     console.log(recipe_details);
-    recipe_details.ingredients.map(async (ing) => await DButils.execQuery(`INSERT INTO ingredients VALUES (
-        '${recipe_details.recipeID}',
-        '${ing.name}',
-        '${ing.amount}',
-        '${ing.unit}',
-        '${ing.name} ' '${ing.amount}' ' ${ing.unit}')`
-        ));
-    await DButils.execQuery(
-        `INSERT INTO recipes VALUES ('${recipe_details.recipeID}', '${recipe_details.title}', '${recipe_details.recipeImage}',
-        '${recipe_details.readyInMinutes}', '${recipe_details.totalLikes}', '${recipe_details.vegan}', '${recipe_details.vegeterian}','${recipe_details.glutenFree}',
-        '${recipe_details.servings}','${recipe_details.pricePerServing}')`
-    );
-    await DButils.execQuery(
-        `INSERT INTO myrecipes VALUES ('${recipe_details.userID}', '${recipe_details.recipeID}')`
-    );
+    try{
+        recipe_details.ingredients.map(async (ing) => await DButils.execQuery(`INSERT INTO ingredients VALUES (
+            '${recipe_details.recipeID}',
+            '${ing.name}',
+            '${ing.amount}',
+            '${ing.unit}',
+            '${ing.name} ' '${ing.amount}' ' ${ing.unit}')`
+            ));
+        await DButils.execQuery(
+            `INSERT INTO recipes VALUES ('${recipe_details.recipeID}', '${recipe_details.title}', '${recipe_details.recipeImage}',
+            '${recipe_details.readyInMinutes}', '${recipe_details.totalLikes}', '${recipe_details.vegan}', '${recipe_details.vegeterian}','${recipe_details.glutenFree}',
+            '${recipe_details.servings}','${recipe_details.pricePerServing}')`
+        );
+        await DButils.execQuery(
+            `INSERT INTO myrecipes VALUES ('${recipe_details.userID}', '${recipe_details.recipeID}')`
+        );
+    
+        recipe_details.analyzedInstructions.map(async (instruction) => await DButils.execQuery(`INSERT INTO analyzedInstructions VALUES (
+            '${recipe_details.recipeID}',
+            '${instruction.number}',
+            '${instruction.instruction}')`
+            ));
+    
+        console.log('myrecipes');
+    }
+    catch (error) {
+        return false;
+    }
+    finally{
+        return true;
+    }
 
-    recipe_details.analyzedInstructions.map(async (instruction) => await DButils.execQuery(`INSERT INTO analyzedInstructions VALUES (
-        '${recipe_details.recipeID}',
-        '${instruction.number}',
-        '${instruction.instruction}')`
-        ));
-
-    console.log('myrecipes');
-    return true;
 }
 
 

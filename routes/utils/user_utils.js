@@ -19,7 +19,8 @@ async function getViewedRecipes(user_id){
  * @param {*} recipe_id - the id of the recipe the user viewed
  */
 async function markAsViewed(user_id, recipe_id){
-    const recipes_id = await DButils.execQuery(`select RecipeID from viewdrecipes where UserID='${user_id}' AND RecipeID='${recipe_id}'`);
+    const recipes_id = await DButils.execQuery(`select RecipeID from viewdrecipes where UserID='${user_id}'
+     AND RecipeID='${recipe_id}'`);
     if(!recipe_id){
         await DButils.execQuery(`INSERT INTO viewdrecipes VALUES ('${user_id}','${recipe_id}')`);
         return true;

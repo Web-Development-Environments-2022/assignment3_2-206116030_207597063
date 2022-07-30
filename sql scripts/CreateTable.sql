@@ -41,14 +41,13 @@ CREATE TABLE Family(
 CREATE TABLE Recipes(
     RecipeID VARCHAR(255) NOT NULL,
     Title VARCHAR(255),
-    RecipeImage Blob,
+    RecipeImage VARCHAR(255),
     ReadyInMinutes VARCHAR(255),
     TotalLikes VARCHAR(255),
     Vegen INT,
     Vegeterian INT,
     GlutenFree INT,
     Servings INT,
-    AnalyzedInstructions VARCHAR(255),
     pricePerServing VARCHAR(255),
     PRIMARY KEY(RecipeID) 
 );
