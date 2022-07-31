@@ -141,11 +141,40 @@ async function getRandomRecipes(){
  * Gets our family recipes from the db
  */
  async function getOurFamilyRecipes(){
-    const ret = await DButils.execQuery(`select RecipeID as id, Title as title,
-         ReadyInMinutes as readyInMinutes, RecipeImage as image, TotalLikes as popularity, 
-         Vegen as vegan, Vegeterian as vegetarian, GlutenFree as glutenFree from ourfamilyrecipes`);
-        return ret;
+    const recipes = await DButils.execQuery(`select RecipeID as id, Title as title, 
+    ReadyInMinutes as readyInMinutes, RecipeImage as image, Vegan as vegan, Vegeterian as vegetarian, 
+    GlutenFree as glutenFree, WhenDoWeEat, ownerRecipe from ourfamilyrecipes`);
+
+    const promise1 = new Promise((resolve, reject) => {
+        resolve('Success!');
+      });
+    var recipes_array = [];
+    const order = new Promise((resolve,reject) => {
+        recipes.map(async(element) => {
+            var analyzed = await DButils.execQuery(`select number, step from analyzedinstructions WHERE RecipeID='${element.id}'`);
+            var ing = await DButils.execQuery(`select original from ingredients WHERE RecipeID='${element.id}'`);
+            recipes_array.push({
+                id: element.id,
+                title: element.title,
+                image: element.image,
+                readyInMinutes: element.ReadyInMinutes,
+                vegan: element.Vegan,
+                vegetarian: element.Vegeterian,
+                glutenFree: element.GlutenFree,
+                analyzedInstructions: analyzed,
+                ingredients: ing
+            });
+            console.log(recipes_array);
+        });
+        resolve(recipes_array);
+    });
+
+    order.then((value) => {
+        console.log(value);
+        return value;
+    });    
 }
+
 
 
 /**

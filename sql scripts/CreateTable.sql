@@ -11,16 +11,15 @@ CREATE TABLE Users(
 );
 
 CREATE TABLE ourFamilyRecipes(  
-    RecipeID INT NOT NULL AUTO_INCREMENT,
+    RecipeID VARCHAR(255) NOT NULL,
     Title VARCHAR(255),
     RecipeImage BLOB,
     ReadyInMinutes VARCHAR(255),
-    TotalLikes VARCHAR(255),
     Vegan INT,
     vegeterian INT,
     GlutenFree INT,
-    servings INT,
-    AnalyzedInstructions VARCHAR(255),
+    WhenDoWeEat VARCHAR(255),
+    ownerRecipe VARCHAR(255),
     PRIMARY KEY(RecipeID)
 );
 

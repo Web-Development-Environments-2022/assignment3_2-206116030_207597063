@@ -82,6 +82,9 @@ router.get("/random", async (req, res , next) => {
  router.get("/getfamilyRecipes", async (req, res , next) => {
   try{
     let our_family_recipes = await recipes_utils.getOurFamilyRecipes();
+    // let fileContent = FileUtils.readFileToByteArray(new File(res.data.image));
+    // res.data.image = Base64.getEncoder().encodeToString(fileContent);
+    console.log(res);
     res.send(our_family_recipes);
   } catch (error) {
     console.log(error);
