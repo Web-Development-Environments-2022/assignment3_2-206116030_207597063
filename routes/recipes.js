@@ -82,9 +82,9 @@ router.get("/random", async (req, res , next) => {
  router.get("/getfamilyRecipes", async (req, res , next) => {
   try{
     let our_family_recipes = await recipes_utils.getOurFamilyRecipes();
-    // let fileContent = FileUtils.readFileToByteArray(new File(res.data.image));
-    // res.data.image = Base64.getEncoder().encodeToString(fileContent);
-    console.log(res);
+    console.log("before");
+    console.log(our_family_recipes);
+    console.log("done");
     res.send(our_family_recipes);
   } catch (error) {
     console.log(error);
@@ -133,10 +133,14 @@ router.post("/addRecipe", async (req, res) =>{
 router.get("/:recipeId", async (req, res, next) => {
   try {
     const recipe = await recipes_utils.getRecipeFullDetails(req.params.recipeId);
+    console.log(req.session);
+    console.log(req.session.user_id);
+
 
     //if the action done by signed in user then save the recipe as viewed
-    if(req.session.user_id==0){
+    if(req.session && req.session.user_id){
       await user_utils.markAsViewed(req.session.user_id,req.params.recipeId);
+      console.log("succsess");
     }
 
     res.send(recipe);

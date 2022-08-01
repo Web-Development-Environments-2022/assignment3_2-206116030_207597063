@@ -142,39 +142,39 @@ async function getRandomRecipes(){
  */
  async function getOurFamilyRecipes(){
     const recipes = await DButils.execQuery(`select RecipeID as id, Title as title, 
-    ReadyInMinutes as readyInMinutes, RecipeImage as image, Vegan as vegan, Vegeterian as vegetarian, 
+    ReadyInMinutes as readyInMinutes, RecipeImage as image, Vegan as vegan, Vegeterian as vegeterian, 
     GlutenFree as glutenFree, WhenDoWeEat, ownerRecipe from ourfamilyrecipes`);
 
-    const promise1 = new Promise((resolve, reject) => {
-        resolve('Success!');
-      });
     var recipes_array = [];
-    const order = new Promise((resolve,reject) => {
-        recipes.map(async(element) => {
-            var analyzed = await DButils.execQuery(`select number, step from analyzedinstructions WHERE RecipeID='${element.id}'`);
-            var ing = await DButils.execQuery(`select original from ingredients WHERE RecipeID='${element.id}'`);
-            recipes_array.push({
+    const promises= await Promise.all(recipes.map(async (element) =>{
+        recipes_array.push(await familyHelper(element));
+    }));
+
+    return recipes_array;
+   
+    
+}
+
+async function familyHelper(element){
+    var analyzed = await DButils.execQuery(`select number, step from analyzedinstructions WHERE RecipeID='${element.id}'`);
+    var ing = await DButils.execQuery(`select original from ingredients WHERE RecipeID='${element.id}'`);
+    let recipe= {
                 id: element.id,
                 title: element.title,
                 image: element.image,
-                readyInMinutes: element.ReadyInMinutes,
-                vegan: element.Vegan,
-                vegetarian: element.Vegeterian,
-                glutenFree: element.GlutenFree,
+                readyInMinutes: element.readyInMinutes,
+                popularity: 0,
+                vegan: element.vegan,
+                vegetarian: element.vegeterian,
+                glutenFree: element.glutenFree,
                 analyzedInstructions: analyzed,
                 ingredients: ing
-            });
-            console.log(recipes_array);
-        });
-        resolve(recipes_array);
-    });
+    };
+    console.log("helper");
+    console.log(recipe);
+    return recipe;
 
-    order.then((value) => {
-        console.log(value);
-        return value;
-    });    
 }
-
 
 
 /**
