@@ -168,7 +168,9 @@ async function familyHelper(element){
                 vegetarian: element.vegeterian,
                 glutenFree: element.glutenFree,
                 analyzedInstructions: analyzed,
-                ingredients: ing
+                extendedIngredients: ing,
+                ownerRecipe: element.ownerRecipe,
+                WhenDoWeEat: element.WhenDoWeEat
     };
     console.log("helper");
     console.log(recipe);
