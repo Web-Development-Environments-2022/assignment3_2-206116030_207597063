@@ -1,3 +1,4 @@
+-- Active: 1654417824041@@127.0.0.1@3306@cooking
 
 CREATE TABLE Users(
     UserID int NOT NULL,
@@ -9,11 +10,11 @@ CREATE TABLE Users(
     Email VARCHAR(255),
     PRIMARY KEY(UserID) 
 );
-
+DROP TABLE IF EXISTS ourFamilyRecipes;
 CREATE TABLE ourFamilyRecipes(  
     RecipeID VARCHAR(255) NOT NULL,
     Title VARCHAR(255),
-    RecipeImage BLOB,
+    RecipeImage VARCHAR(255),
     ReadyInMinutes VARCHAR(255),
     Vegan INT,
     vegeterian INT,

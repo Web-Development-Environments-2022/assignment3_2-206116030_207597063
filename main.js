@@ -64,7 +64,7 @@ const corsConfig = {
 app.use(cors(corsConfig));
 app.options("*", cors(corsConfig));
 
-var port = process.env.PORT || "80"; //local=3000 remote=80
+//var port = process.env.PORT || "80"; //local=3000 remote=80
 //#endregion
 const user = require("./routes/user");
 const recipes = require("./routes/recipes");
@@ -73,8 +73,8 @@ const auth = require("./routes/auth");
 
 //#region cookie middleware
 app.use(function (req, res, next) {
-  req.session.user_id=1;
-  next();
+   req.session.user_id=1;
+   next();
   // if (req.session && req.session.user_id) {
   //   DButils.execQuery("SELECT UserID FROM users")
   //     .then((users) => {
