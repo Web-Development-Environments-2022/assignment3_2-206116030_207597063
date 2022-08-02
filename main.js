@@ -73,20 +73,22 @@ const auth = require("./routes/auth");
 
 //#region cookie middleware
 app.use(function (req, res, next) {
-  if (req.session && req.session.user_id) {
-    DButils.execQuery("SELECT UserID FROM users")
-      .then((users) => {
-        if (users.find((x) => x.user_id === req.session.user_id)) {
-          req.user_id = req.session.user_id;
-          console.log("good session");
-        }
-        next();
-      })
-      .catch((error) => next());
-  } else {
-    next();
-    console.log("not good next");
-  }
+  req.session.user_id=1;
+  next();
+  // if (req.session && req.session.user_id) {
+  //   DButils.execQuery("SELECT UserID FROM users")
+  //     .then((users) => {
+  //       if (users.find((x) => x.user_id === req.session.user_id)) {
+  //         req.user_id = req.session.user_id;
+  //         console.log("good session");
+  //       }
+  //       next();
+  //     })
+  //     .catch((error) => next());
+  // } else {
+  //   next();
+  //   console.log("not good next");
+  // }
 });
 //#endregion
 
