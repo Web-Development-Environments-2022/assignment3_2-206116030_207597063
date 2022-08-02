@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 const DButils = require("../routes/utils/DButils");
 const bcrypt = require("bcrypt");
-var id=0; //counter for the users id
+var id=1; //counter for the users id
 
 
 /**
@@ -70,6 +70,7 @@ router.post("/Login", async (req, res, next) => {
     }
 
     // Set cookie
+    console.log(user.UserID);
     req.session.user_id = user.UserID;
     req.session.search='no search';
 

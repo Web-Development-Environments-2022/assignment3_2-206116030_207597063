@@ -2,8 +2,19 @@ var express = require("express");
 var router = express.Router();
 var id=0; //counter for the users id
 const recipes_utils = require("./utils/recipes_utils");
+const user_utils = require("./utils/user_utils");
+
 
 router.get("/", (req, res) => res.send("im here"));
+
+router.get("/image" , async(req, res) => {
+  try{
+    res.sendFile("../images/frikase.jpeg");
+  }catch(error){
+    console.log(error);
+    res.sendStatus(404);
+  }
+});
 
 
 /**
@@ -65,7 +76,21 @@ router.get("/random", async (req, res , next) => {
   }
 });
 
-
+/**
+ * Returns our family recipes
+ */
+ router.get("/getfamilyRecipes", async (req, res , next) => {
+  try{
+    let our_family_recipes = await recipes_utils.getOurFamilyRecipes();
+    console.log("before");
+    console.log(our_family_recipes);
+    console.log("done");
+    res.send(our_family_recipes);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(404);
+  }
+});
 
 /**
  * Saves a new recipe in the DB
@@ -79,12 +104,13 @@ router.post("/addRecipe", async (req, res) =>{
     recipeImage: req.body.recipeImage,
     readyInMinutes: req.body.readyInMinutes,
     totalLikes: '0',
-    vegen: req.body.vegen,
+    vegan: req.body.vegan ,
     vegeterian: req.body.vegeterian,
     glutenFree: req.body.glutenFree,
     servings: req.body.servings,
     analyzedInstructions: req.body.analyzedInstructions,
-    ingredients: req.body.ingredients
+    ingredients: req.body.ingredients,
+    pricePerServing: '1'
   }
   id=id+1;
   let bool = await recipes_utils.addRecipeToDB(recipe_details);
@@ -107,6 +133,16 @@ router.post("/addRecipe", async (req, res) =>{
 router.get("/:recipeId", async (req, res, next) => {
   try {
     const recipe = await recipes_utils.getRecipeFullDetails(req.params.recipeId);
+    console.log(req.session);
+    console.log(req.session.user_id);
+
+
+    //if the action done by signed in user then save the recipe as viewed
+    if(req.session && req.session.user_id){
+      await user_utils.markAsViewed(req.session.user_id,req.params.recipeId);
+      console.log("succsess");
+    }
+
     res.send(recipe);
   } catch (error) {
     console.log(error);

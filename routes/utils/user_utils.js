@@ -19,8 +19,14 @@ async function getViewedRecipes(user_id){
  * @param {*} recipe_id - the id of the recipe the user viewed
  */
 async function markAsViewed(user_id, recipe_id){
-    await DButils.execQuery(`INSERT INTO viewdrecipes VALUES ('${user_id}','${recipe_id}')`);
-    return true;
+    console.log(user_id);
+    console.log(recipe_id);
+    const recipes_id = await DButils.execQuery(`select RecipeID from viewdrecipes where UserID='${user_id}'
+     AND RecipeID='${recipe_id}'`);
+    if(!recipes_id.length){
+        await DButils.execQuery(`INSERT INTO viewdrecipes VALUES ('${user_id}','${recipe_id}')`);
+        return true;
+    }
 }
 
 
@@ -30,7 +36,9 @@ async function markAsViewed(user_id, recipe_id){
  * @param {*} recipe_id - the id of the recipe the user saved
  */
 async function markAsFavorite(user_id, recipe_id){
-    await DButils.execQuery(`INSERT INTO favoriterecipes VALUES ('${user_id}','${recipe_id}')`);
+    console.log("user: "+user_id);
+    console.log("recipe: "+recipe_id);
+    await DButils.execQuery(`INSERT INTO favoriterecipes VALUES ('${user_id}', '${recipe_id}')`);
     return true;
 } 
 
@@ -44,7 +52,7 @@ async function markAsFavorite(user_id, recipe_id){
  */
  async function getRecipesDB(user_id, table){
     const recipes = await DButils.execQuery(
-        `select recipes.RecipeID, Title, RecipeImage, ReadyInMinutes, TotalLikes,Vegen, Vegeterian, GlutenFree from
+        `select recipes.RecipeID, Title, RecipeImage, ReadyInMinutes, TotalLikes,Vegan, Vegeterian, GlutenFree from
         ${table} inner join recipes on ${table}.RecipeID=recipes.RecipeID where UserID='${user_id}'`);
     
     let recipes_array = [];
@@ -54,7 +62,7 @@ async function markAsFavorite(user_id, recipe_id){
       image : element.RecipeImage,
       readyInMinutes : element.ReadyInMinutes,
       popularity : element.TotalLikes,
-      vegan : element.Vegen,
+      vegan : element.Vegan,
       vegetarian : element.Vegeterian,
       glutenFree : element.GlutenFree
     })); //extracting the recipe ids from db into array
