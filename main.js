@@ -32,10 +32,10 @@ app.use(
     secret: process.env.COOKIE_SECRET, // the encryption key
     duration: 24 * 60 * 60 * 1000, // expired after 20 sec
     activeDuration: 1000 * 60 * 5, // if expiresIn < activeDuration,
+    //the session will be extended by activeDuration milliseconds
     cookie: {
       httpOnly: false,
     }
-    //the session will be extended by activeDuration milliseconds
   })
 );
 app.use(express.urlencoded({ extended: false })); // parse application/x-www-form-urlencoded
@@ -57,12 +57,14 @@ app.get("/",function(req,res)
 // app.options("*", cors());
 
 const corsConfig = {
-  origin: true,
+  origin: "http://132.73.84.103:8080",
+  //origin:true,
   credentials: true
 };
 
 app.use(cors(corsConfig));
-app.options("*", cors(corsConfig));
+//need to undo the comment with the origin above and remove the axios cred in the second line in the vue main 
+//app.options("*", cors(corsConfig));
 
 //var port = process.env.PORT || "80"; //local=3000 remote=80
 //#endregion
@@ -73,22 +75,24 @@ const auth = require("./routes/auth");
 
 //#region cookie middleware
 app.use(function (req, res, next) {
-   req.session.user_id=1;
-   next();
-  // if (req.session && req.session.user_id) {
-  //   DButils.execQuery("SELECT UserID FROM users")
-  //     .then((users) => {
-  //       if (users.find((x) => x.user_id === req.session.user_id)) {
-  //         req.user_id = req.session.user_id;
-  //         console.log("good session");
-  //       }
-  //       next();
-  //     })
-  //     .catch((error) => next());
-  // } else {
-  //   next();
-  //   console.log("not good next");
-  // }
+  //  req.session.user_id=1;
+  //  next();
+  console.log("session: " + req.session);
+  console.log(req.session.user_id);
+  if (req.session && req.session.user_id) {
+    DButils.execQuery("SELECT UserID FROM users")
+      .then((users) => {
+        if (users.find((x) => x.user_id === req.session.user_id)) {
+          req.user_id = req.session.user_id;
+          console.log("good session");
+        }
+        next();
+      })
+      .catch((error) => next());
+  } else {
+    next();
+    console.log("not good next");
+  }
 });
 //#endregion
 
@@ -102,8 +106,11 @@ app.use("/auth",auth);
 
 // Default router
 app.use(function (err, req, res, next) {
-  console.error(err);
-  res.status(err.status || 500).send({ message: err.message, success: false });
+  if(err){
+    console.error(err);
+    res.status(err.status || 500).send({ message: err.message, success: false });
+  }
+
 });
 
 

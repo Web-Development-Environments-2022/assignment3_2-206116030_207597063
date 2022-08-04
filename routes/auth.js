@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 const DButils = require("../routes/utils/DButils");
 const bcrypt = require("bcrypt");
-var id=1; //counter for the users id
+//var id=1; //counter for the users id
 
 
 /**
@@ -33,12 +33,17 @@ router.post("/Register", async (req, res, next) => {
       user_details.password,
       parseInt(process.env.bcrypt_saltRounds)
     );
+
+    let last_id = await DButils.execQuery(`SELECT MAX(UserID) as id from users`);
+    console.log(last_id);
+    last_id = last_id[0]["id"] + 1;
+    console.log(last_id);
     // save the user details
     await DButils.execQuery(
-      `INSERT INTO users VALUES ('${id}','${user_details.username}', '${user_details.firstname}', '${user_details.lastname}',
+      `INSERT INTO users VALUES ('${last_id}','${user_details.username}', '${user_details.firstname}', '${user_details.lastname}',
       '${user_details.country}', '${hash_password}', '${user_details.email}')`
     );
-    id = id+1;
+    //id = id+1;
     // update global counter 
     res.status(201).send({ message: "user created", success: true });
   } catch (error) {
@@ -73,6 +78,7 @@ router.post("/Login", async (req, res, next) => {
     console.log(user.UserID);
     req.session.user_id = user.UserID;
     req.session.search='no search';
+    console.log(req.session.user_id);
 
 
     // return cookie
