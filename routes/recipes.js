@@ -101,7 +101,7 @@ router.post("/addRecipe", async (req, res) =>{
     var count = await DButils.execQuery("SELECT COUNT(*) as count FROM recipes");
     let recipe_details = {
     userID: req.session.user_id,
-    recipeID: 'd'+count[0]["count"].toString(),
+    recipeID: 'd'+(count[0]["count"]+1).toString(),
     title: req.body.title,
     recipeImage: req.body.recipeImage,
     readyInMinutes: req.body.readyInMinutes,
