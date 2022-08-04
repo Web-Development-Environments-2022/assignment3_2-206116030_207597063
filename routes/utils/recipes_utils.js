@@ -223,7 +223,6 @@ async function getRecipesPreview(recipes){
  * @param {*} recipe_details - json with the new recipe details
  */
 async function addRecipeToDB(recipe_details){
-    console.log(recipe_details);
     try{
         recipe_details.ingredients.map(async (ing) => await DButils.execQuery(`INSERT INTO ingredients VALUES (
             '${recipe_details.recipeID}',

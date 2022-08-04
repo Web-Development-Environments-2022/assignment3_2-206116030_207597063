@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
-var id=0; //counter for the users id
+const DButils = require("../routes/utils/DButils");
+//var id=0; //counter for the users id
 const recipes_utils = require("./utils/recipes_utils");
 const user_utils = require("./utils/user_utils");
 
@@ -97,9 +98,10 @@ router.get("/random", async (req, res , next) => {
  */
 router.post("/addRecipe", async (req, res) =>{
   try{
+    var count = await DButils.execQuery("SELECT COUNT(*) as count FROM recipes");
     let recipe_details = {
     userID: req.session.user_id,
-    recipeID: 'd'+id,
+    recipeID: 'd'+count[0]["count"].toString(),
     title: req.body.title,
     recipeImage: req.body.recipeImage,
     readyInMinutes: req.body.readyInMinutes,
@@ -112,7 +114,7 @@ router.post("/addRecipe", async (req, res) =>{
     ingredients: req.body.ingredients,
     pricePerServing: '1'
   }
-  id=id+1;
+  //id=id+1;
   let bool = await recipes_utils.addRecipeToDB(recipe_details);
   if(bool){
     res.status(201).send({ message: "recipe created", success: true });

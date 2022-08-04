@@ -34,10 +34,16 @@ router.post("/Register", async (req, res, next) => {
       parseInt(process.env.bcrypt_saltRounds)
     );
 
-    let last_id = await DButils.execQuery(`SELECT MAX(UserID) as id from users`);
+    var last_id = await DButils.execQuery(`SELECT MAX(UserID) as id from users`);
+    console.log(last_id);
+    if (!last_id){
+      last_id = 0;
+    }
+    else{
     console.log(last_id);
     last_id = last_id[0]["id"] + 1;
     console.log(last_id);
+    }
     // save the user details
     await DButils.execQuery(
       `INSERT INTO users VALUES ('${last_id}','${user_details.username}', '${user_details.firstname}', '${user_details.lastname}',
