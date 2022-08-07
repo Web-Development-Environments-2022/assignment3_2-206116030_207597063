@@ -77,21 +77,6 @@ router.get("/random", async (req, res , next) => {
   }
 });
 
-/**
- * Returns our family recipes
- */
- router.get("/getfamilyRecipes", async (req, res , next) => {
-  try{
-    let our_family_recipes = await recipes_utils.getOurFamilyRecipes();
-    console.log("before");
-    console.log(our_family_recipes);
-    console.log("done");
-    res.send(our_family_recipes);
-  } catch (error) {
-    console.log(error);
-    res.sendStatus(404);
-  }
-});
 
 /**
  * Saves a new recipe in the DB

@@ -26,29 +26,40 @@ router.use(async function (req, res, next) {
  router.get('/viewed3', async (req,res,next) => {
   try{
     const user_id = req.session.user_id;
-    const recipes_id_db = await user_utils.getRecipesDB(user_id,"viewdrecipes");
-    const recipes_id_sp = await user_utils.getRecipesSp(user_id,"viewdrecipes");
-    var merge_results;
-    if(recipes_id_db.length > 0 && recipes_id_sp.length >0){
-      merge_results= [recipes_id_db, recipes_id_sp];
-      res.status(200).send(merge_results);
-    }
-    else if(recipes_id_db.length >0 ){
-      merge_results = recipes_id_db;
-
+    var recipes_id_sp = await user_utils.getRecipesSp(user_id,"viewdrecipes");
+    if(recipes_id_sp.length <=3){
+      res.status(200).send(recipes_id_sp);
     }
     else{
-      merge_results = recipes_id_sp;
+      let len = recipes_id_sp.length 
+      let top_3 = [recipes_id_sp[len-1],recipes_id_sp[len-2],recipes_id_sp[len-3]]
+      res.status(200).send(top_3);
 
     }
+    // const user_id = req.session.user_id;
+    // const recipes_id_db = await user_utils.getRecipesDB(user_id,"viewdrecipes");
+    // const recipes_id_sp = await user_utils.getRecipesSp(user_id,"viewdrecipes");
+    // var merge_results;
+    // if(recipes_id_db.length > 0 && recipes_id_sp.length >0){
+    //   merge_results= [recipes_id_db, recipes_id_sp];
+    //   res.status(200).send(merge_results);
+    // }
+    // else if(recipes_id_db.length >0 ){
+    //   merge_results = recipes_id_db;
 
-    if(merge_results.length >=3){
-      let ret=[merge_results[0],merge_results[1],merge_results[2]];
-      res.status(200).send(ret);
-    }
-    else{
-      res.status(200).send(merge_results);
-    }
+    // }
+    // else{
+    //   merge_results = recipes_id_sp;
+
+    // }
+
+    // if(merge_results.length >=3){
+    //   let ret=[merge_results[0],merge_results[1],merge_results[2]];
+    //   res.status(200).send(ret);
+    // }
+    // else{
+    //   res.status(200).send(merge_results);
+    // }
   } catch(error){
     console.log(error);
     res.sendStatus(500);
@@ -143,6 +154,21 @@ router.get('/myRecipes', async (req,res,next) => {
     console.log(error);
     res.sendStatus(500);
 
+  }
+});
+
+/**
+ * Returnes the previews of the recipes the user has added and saved in the DB
+ */
+ router.get('/myFamilyRecipes', async (req,res,next) => {
+  try{
+    const user_id = req.session.user_id;
+    let our_family_recipes = await user_utils.getOurFamilyRecipes(user_id);
+    console.log(our_family_recipes);
+    res.status(200).send(our_family_recipes);
+  } catch(error){
+    console.log(error);
+    res.sendStatus(404);
   }
 });
 

@@ -45,6 +45,50 @@ async function markAsFavorite(user_id, recipe_id){
 
 
 /**
+ * Gets our family recipes from the db
+ */
+ async function getOurFamilyRecipes(user_id){
+    const recipes = await DButils.execQuery(`select family.RecipeID as id, Title as title, 
+    ReadyInMinutes as readyInMinutes, RecipeImage as image, Vegan as vegan, Vegeterian as vegeterian, 
+    GlutenFree as glutenFree, WhenDoWeEat, ownerRecipe, image1, image2, image3 from familyuser inner join ourfamilyrecipes as family 
+    on familyuser.RecipeID=family.RecipeID where UserID='${user_id}'`);
+
+    var recipes_array = [];
+    const promises= await Promise.all(recipes.map(async (element) =>{
+        recipes_array.push(await familyHelper(element));
+    }));
+
+    return recipes_array;   
+}
+
+async function familyHelper(element){
+    var analyzed = await DButils.execQuery(`select number, step from analyzedinstructions WHERE RecipeID='${element.id}'`);
+    var ing = await DButils.execQuery(`select original from ingredients WHERE RecipeID='${element.id}'`);
+    let recipe= {
+                id: element.id,
+                title: element.title,
+                image: element.image,
+                readyInMinutes: element.readyInMinutes,
+                popularity: 0,
+                vegan: element.vegan,
+                vegetarian: element.vegeterian,
+                glutenFree: element.glutenFree,
+                analyzedInstructions: analyzed,
+                extendedIngredients: ing,
+                ownerRecipe: element.ownerRecipe,
+                WhenDoWeEat: element.WhenDoWeEat,
+                image1: element.image1,
+                image2: element.image2,
+                image3: element.image3,
+    };
+    console.log("helper");
+    console.log(recipe);
+    return recipe;
+
+}
+
+
+/**
  * returns the preview of the recipes which related to the user_id from one of 3 DB tabels
  * favoritec , viewed and my recipes
  * @param {*} user_id - the id of the user 
@@ -101,3 +145,4 @@ exports.getViewedRecipes = getViewedRecipes;
 exports.getRecipesSp = getRecipesSp;
 exports.getRecipesDB = getRecipesDB;
 exports.markAsViewed = markAsViewed;
+exports.getOurFamilyRecipes = getOurFamilyRecipes;

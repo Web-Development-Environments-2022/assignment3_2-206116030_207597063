@@ -25,8 +25,12 @@ router.post("/Register", async (req, res, next) => {
     users = await DButils.execQuery("SELECT username from users");
 
     // check the username does not already exist
-    if (users.find((x) => x.username === user_details.username))
-      throw { status: 409, message: "Username taken" };
+    if (users.find((x) => x.username === user_details.username)){
+      res.sendStatus(409,"Username taken");
+      return;
+      //throw { status: 409, message: "Username taken" };
+    }
+
 
     // hash the password
     let hash_password = bcrypt.hashSync(
@@ -54,7 +58,6 @@ router.post("/Register", async (req, res, next) => {
     res.status(201).send({ message: "user created", success: true });
   } catch (error) {
     console.log(error);
-    next();
   }
 });
 
@@ -100,7 +103,10 @@ router.post("/Login", async (req, res, next) => {
  * Logout the user and reset the the session
  */
 router.post("/Logout", function (req, res) {
+  console.log("before logout: " + req.session.user_id);
+  req.session.user_id = undefined;
   req.session.reset(); // reset the session info --> send cookie when  req.session == undefined!!
+  console.log("after logout: " + req.session.user_id);
   res.send({ success: true, message: "Logout succeeded" });
 });
 

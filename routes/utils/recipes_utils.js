@@ -137,46 +137,7 @@ async function getRandomRecipes(){
     return response;
 }
 
-/**
- * Gets our family recipes from the db
- */
- async function getOurFamilyRecipes(){
-    const recipes = await DButils.execQuery(`select RecipeID as id, Title as title, 
-    ReadyInMinutes as readyInMinutes, RecipeImage as image, Vegan as vegan, Vegeterian as vegeterian, 
-    GlutenFree as glutenFree, WhenDoWeEat, ownerRecipe from ourfamilyrecipes`);
 
-    var recipes_array = [];
-    const promises= await Promise.all(recipes.map(async (element) =>{
-        recipes_array.push(await familyHelper(element));
-    }));
-
-    return recipes_array;
-   
-    
-}
-
-async function familyHelper(element){
-    var analyzed = await DButils.execQuery(`select number, step from analyzedinstructions WHERE RecipeID='${element.id}'`);
-    var ing = await DButils.execQuery(`select original from ingredients WHERE RecipeID='${element.id}'`);
-    let recipe= {
-                id: element.id,
-                title: element.title,
-                image: element.image,
-                readyInMinutes: element.readyInMinutes,
-                popularity: 0,
-                vegan: element.vegan,
-                vegetarian: element.vegeterian,
-                glutenFree: element.glutenFree,
-                analyzedInstructions: analyzed,
-                extendedIngredients: ing,
-                ownerRecipe: element.ownerRecipe,
-                WhenDoWeEat: element.WhenDoWeEat
-    };
-    console.log("helper");
-    console.log(recipe);
-    return recipe;
-
-}
 
 
 /**
@@ -286,7 +247,6 @@ async function getRecipeFullDetails(recipe_id) {
 
 
 
-exports.getOurFamilyRecipes = getOurFamilyRecipes;
 exports.getRandomThreeRecipes = getRandomThreeRecipes;
 exports.search = search;
 exports.getRecipeFullDetails = getRecipeFullDetails;

@@ -26,8 +26,7 @@ app.use(logger("dev")); //logger
 app.use(express.json()); // parse application/json
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
-app.use(
-  session({
+app.use(session({
     cookieName: "session", // the cookie key name
     secret: process.env.COOKIE_SECRET, // the encryption key
     duration: 24 * 60 * 60 * 1000, // expired after 20 sec
