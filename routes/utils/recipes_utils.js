@@ -178,45 +178,7 @@ async function getRecipesPreview(recipes){
 }
 
 
-/**
- * Add a new recipe to the database with all his inforamtions and ingredients
- * Saving user-recipe pair in a different table to know for each user the recipes he added
- * @param {*} recipe_details - json with the new recipe details
- */
-async function addRecipeToDB(recipe_details){
-    try{
-        recipe_details.ingredients.map(async (ing) => await DButils.execQuery(`INSERT INTO ingredients VALUES (
-            '${recipe_details.recipeID}',
-            '${ing.name}',
-            '${ing.amount}',
-            '${ing.unit}',
-            '${ing.name} ' '${ing.amount}' ' ${ing.unit}')`
-            ));
-        await DButils.execQuery(
-            `INSERT INTO recipes VALUES ('${recipe_details.recipeID}', '${recipe_details.title}', '${recipe_details.recipeImage}',
-            '${recipe_details.readyInMinutes}', '${recipe_details.totalLikes}', '${recipe_details.vegan}', '${recipe_details.vegeterian}','${recipe_details.glutenFree}',
-            '${recipe_details.servings}','${recipe_details.pricePerServing}')`
-        );
-        await DButils.execQuery(
-            `INSERT INTO myrecipes VALUES ('${recipe_details.userID}', '${recipe_details.recipeID}')`
-        );
-    
-        recipe_details.analyzedInstructions.map(async (instruction) => await DButils.execQuery(`INSERT INTO analyzedInstructions VALUES (
-            '${recipe_details.recipeID}',
-            '${instruction.number}',
-            '${instruction.instruction}')`
-            ));
-    
-        console.log('myrecipes');
-    }
-    catch (error) {
-        return false;
-    }
-    finally{
-        return true;
-    }
 
-}
 
 
 /**
@@ -250,7 +212,6 @@ async function getRecipeFullDetails(recipe_id) {
 exports.getRandomThreeRecipes = getRandomThreeRecipes;
 exports.search = search;
 exports.getRecipeFullDetails = getRecipeFullDetails;
-exports.addRecipeToDB = addRecipeToDB;
 exports.getRecipesPreview = getRecipesPreview;
 exports.getSearchRecipesPreview = getSearchRecipesPreview;
 

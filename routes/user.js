@@ -158,6 +158,42 @@ router.get('/myRecipes', async (req,res,next) => {
 });
 
 /**
+ * Saves a new recipe in the DB
+ */
+ router.post("/addRecipe", async (req, res) =>{
+  try{
+    var count = await DButils.execQuery("SELECT COUNT(*) as count FROM recipes");
+    let recipe_details = {
+    userID: req.session.user_id,
+    recipeID: 'd'+(count[0]["count"]+1).toString(),
+    title: req.body.title,
+    recipeImage: req.body.image,
+    readyInMinutes: req.body.readyInMinutes,
+    totalLikes: '0',
+    vegan: req.body.vegan ,
+    vegeterian: req.body.vegeterian,
+    glutenFree: req.body.glutenFree,
+    servings: req.body.servings,
+    analyzedInstructions: req.body.analyzedInstructions,
+    ingredients: req.body.extendedIngredients,
+    pricePerServing: '1'
+  }
+  //id=id+1;
+  let bool = await user_utils.addRecipeToDB(recipe_details);
+  if(bool){
+    res.status(201).send({ message: "recipe created", success: true });
+  }
+  else{
+    res.sendStatus(400);
+  }
+} catch (error) {
+  res.sendStatus(400);
+  console.log(error);
+
+}
+})
+
+/**
  * Returnes the previews of the recipes the user has added and saved in the DB
  */
  router.get('/myFamilyRecipes', async (req,res,next) => {

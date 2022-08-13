@@ -61,6 +61,46 @@ async function markAsFavorite(user_id, recipe_id){
     return recipes_array;   
 }
 
+/**
+ * Add a new recipe to the database with all his inforamtions and ingredients
+ * Saving user-recipe pair in a different table to know for each user the recipes he added
+ * @param {*} recipe_details - json with the new recipe details
+ */
+ async function addRecipeToDB(recipe_details){
+    console.log(recipe_details);
+    try{
+        recipe_details.ingredients.map(async (ing) => await DButils.execQuery(`INSERT INTO ingredients VALUES (
+            '${recipe_details.recipeID}',
+            '${ing.name}',
+            '${ing.amount}',
+            '${ing.unit}',
+            '${ing.name} ' '${ing.amount}' ' ${ing.unit}')`
+            ));
+        await DButils.execQuery(
+            `INSERT INTO recipes VALUES ('${recipe_details.recipeID}', '${recipe_details.title}', '${recipe_details.recipeImage}',
+            '${recipe_details.readyInMinutes}', '${recipe_details.totalLikes}', '${recipe_details.vegan}', '${recipe_details.vegeterian}','${recipe_details.glutenFree}',
+            '${recipe_details.servings}','${recipe_details.pricePerServing}')`
+        );
+        await DButils.execQuery(
+            `INSERT INTO myrecipes VALUES ('${recipe_details.userID}', '${recipe_details.recipeID}')`
+        );
+    
+        recipe_details.analyzedInstructions.map(async (instruction) => await DButils.execQuery(`INSERT INTO analyzedInstructions VALUES (
+            '${recipe_details.recipeID}',
+            '${instruction.number}',
+            '${instruction.instruction}')`
+            ));
+    
+        console.log('myrecipes');
+        return true;
+    }
+    catch (error) {
+        console.log(error);
+        return false;
+    }
+
+}
+
 async function familyHelper(element){
     var analyzed = await DButils.execQuery(`select number, step from analyzedinstructions WHERE RecipeID='${element.id}'`);
     var ing = await DButils.execQuery(`select original from ingredients WHERE RecipeID='${element.id}'`);
@@ -146,3 +186,4 @@ exports.getRecipesSp = getRecipesSp;
 exports.getRecipesDB = getRecipesDB;
 exports.markAsViewed = markAsViewed;
 exports.getOurFamilyRecipes = getOurFamilyRecipes;
+exports.addRecipeToDB = addRecipeToDB;

@@ -40,15 +40,15 @@ app.use(session({
 app.use(express.urlencoded({ extended: false })); // parse application/x-www-form-urlencoded
 app.use(express.static(path.join(__dirname, "public"))); //To serve static files such as images, CSS files, and JavaScript files
 //local:
-//app.use(express.static(path.join(__dirname, "dist")));
-remote:
+// app.use(express.static(path.join(__dirname, "dist")));
+// remote:
 app.use(express.static(path.join(__dirname, '../assignment-3-3-basic/dist')));
 app.get("/",function(req,res)
 { 
   //remote: 
   res.sendFile(path.join(__dirname, '../assignment-3-3-basic/dist/index.html'));
   //local:
-  //res.sendFile(__dirname+"/index.html");
+  // res.sendFile(__dirname+"/index.html");
 
 });
 
@@ -57,7 +57,7 @@ app.get("/",function(req,res)
 
 const corsConfig = {
   origin: "http://132.73.84.103:8080",
-  //origin:true,
+  // origin:true,
   credentials: true
 };
 
@@ -65,7 +65,7 @@ app.use(cors(corsConfig));
 //need to undo the comment with the origin above and remove the axios cred in the second line in the vue main 
 //app.options("*", cors(corsConfig));
 
-//var port = process.env.PORT || "80"; //local=3000 remote=80
+// var port = process.env.PORT || "80"; //local=3000 remote=80
 //#endregion
 const user = require("./routes/user");
 const recipes = require("./routes/recipes");

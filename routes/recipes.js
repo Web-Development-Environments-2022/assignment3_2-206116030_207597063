@@ -78,41 +78,7 @@ router.get("/random", async (req, res , next) => {
 });
 
 
-/**
- * Saves a new recipe in the DB
- */
-router.post("/addRecipe", async (req, res) =>{
-  try{
-    var count = await DButils.execQuery("SELECT COUNT(*) as count FROM recipes");
-    let recipe_details = {
-    userID: req.session.user_id,
-    recipeID: 'd'+(count[0]["count"]+1).toString(),
-    title: req.body.title,
-    recipeImage: req.body.recipeImage,
-    readyInMinutes: req.body.readyInMinutes,
-    totalLikes: '0',
-    vegan: req.body.vegan ,
-    vegeterian: req.body.vegeterian,
-    glutenFree: req.body.glutenFree,
-    servings: req.body.servings,
-    analyzedInstructions: req.body.analyzedInstructions,
-    ingredients: req.body.ingredients,
-    pricePerServing: '1'
-  }
-  //id=id+1;
-  let bool = await recipes_utils.addRecipeToDB(recipe_details);
-  if(bool){
-    res.status(201).send({ message: "recipe created", success: true });
-  }
-  else{
-    res.sendStatus(400);
-  }
-} catch (error) {
-  res.sendStatus(400);
-  console.log(error);
 
-}
-})
 
 /**
  * Returns full details of a recipe by id
@@ -129,8 +95,22 @@ router.get("/:recipeId", async (req, res, next) => {
       await user_utils.markAsViewed(req.session.user_id,req.params.recipeId);
       console.log("succsess");
     }
+    let ret= {
+      id: recipe.id,
+      title: recipe.title,
+      image: recipe.image,
+      readyInMinutes: recipe.readyInMinutes,
+      aggregateLikes: recipe.aggregateLikes,
+      vegan: recipe.vegan,
+      vegetarian: recipe.vegeterian,
+      glutenFree: recipe.glutenFree,
+      servings: recipe.servings,
+      pricePerServing: recipe.pricePerServing,
+      analyzedInstructions: recipe.analyzedInstructions,
+      extendedIngredients: recipe.extendedIngredients
+};
 
-    res.send(recipe);
+    res.send(ret);
   } catch (error) {
     console.log(error);
     res.sendStatus(404);
