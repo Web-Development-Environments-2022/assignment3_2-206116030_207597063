@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 const DButils = require("../routes/utils/DButils");
 const bcrypt = require("bcrypt");
-var id=1; //counter for the users id
+//var id=1; //counter for the users id
 
 
 /**
@@ -25,25 +25,39 @@ router.post("/Register", async (req, res, next) => {
     users = await DButils.execQuery("SELECT username from users");
 
     // check the username does not already exist
-    if (users.find((x) => x.username === user_details.username))
-      throw { status: 409, message: "Username taken" };
+    if (users.find((x) => x.username === user_details.username)){
+      res.sendStatus(409,"Username taken");
+      return;
+      //throw { status: 409, message: "Username taken" };
+    }
+
 
     // hash the password
     let hash_password = bcrypt.hashSync(
       user_details.password,
       parseInt(process.env.bcrypt_saltRounds)
     );
+
+    var last_id = await DButils.execQuery(`SELECT MAX(UserID) as id from users`);
+    console.log(last_id);
+    if (!last_id){
+      last_id = 0;
+    }
+    else{
+    console.log(last_id);
+    last_id = last_id[0]["id"] + 1;
+    console.log(last_id);
+    }
     // save the user details
     await DButils.execQuery(
-      `INSERT INTO users VALUES ('${id}','${user_details.username}', '${user_details.firstname}', '${user_details.lastname}',
+      `INSERT INTO users VALUES ('${last_id}','${user_details.username}', '${user_details.firstname}', '${user_details.lastname}',
       '${user_details.country}', '${hash_password}', '${user_details.email}')`
     );
-    id = id+1;
+    //id = id+1;
     // update global counter 
     res.status(201).send({ message: "user created", success: true });
   } catch (error) {
     console.log(error);
-    next();
   }
 });
 
@@ -73,6 +87,7 @@ router.post("/Login", async (req, res, next) => {
     console.log(user.UserID);
     req.session.user_id = user.UserID;
     req.session.search='no search';
+    console.log(req.session.user_id);
 
 
     // return cookie
@@ -88,7 +103,10 @@ router.post("/Login", async (req, res, next) => {
  * Logout the user and reset the the session
  */
 router.post("/Logout", function (req, res) {
+  console.log("before logout: " + req.session.user_id);
+  req.session.user_id = undefined;
   req.session.reset(); // reset the session info --> send cookie when  req.session == undefined!!
+  console.log("after logout: " + req.session.user_id);
   res.send({ success: true, message: "Logout succeeded" });
 });
 

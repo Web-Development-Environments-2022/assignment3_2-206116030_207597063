@@ -10,7 +10,7 @@ CREATE TABLE Users(
     Email VARCHAR(255),
     PRIMARY KEY(UserID) 
 );
-DROP TABLE IF EXISTS ourFamilyRecipes;
+-- DROP TABLE IF EXISTS ourFamilyRecipes;
 CREATE TABLE ourFamilyRecipes(  
     RecipeID VARCHAR(255) NOT NULL,
     Title VARCHAR(255),
@@ -21,21 +21,16 @@ CREATE TABLE ourFamilyRecipes(
     GlutenFree INT,
     WhenDoWeEat VARCHAR(255),
     ownerRecipe VARCHAR(255),
+    image1 VARCHAR(255),
+    image2 VARCHAR(255),
+    image3 VARCHAR(255),
     PRIMARY KEY(RecipeID)
 );
 
-CREATE TABLE Family(
-    id int NOT NULL AUTO_INCREMENT,
-    ownRecipe VARCHAR(255),
-    RecipeImage VARCHAR(255),
-    whenPrepared VARCHAR(255),
-    ingredients VARCHAR(255),
-    AnalyzedInstructions VARCHAR(255),
-    servings INT,
-    Vegan VARCHAR(255),
-    vegeterian VARCHAR(255),
-    GlutenFree VARCHAR(255),
-    PRIMARY KEY(id)
+CREATE TABLE FamilyUser(
+    UserID int NOT NULL,
+    RecipeID VARCHAR(255) NOT NULL,
+    PRIMARY KEY(UserID,RecipeID) 
 );
 
 CREATE TABLE Recipes(
