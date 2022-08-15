@@ -64,6 +64,10 @@ router.use(async function (req, res, next) {
  */
 router.post('/viewedPost', async (req,res,next) => {
   try{
+    if(!req.body.recipeId || !req.session.user_id){
+      res.sendStatus(400);
+      return;
+    }
     const user_id = req.session.user_id;
     const recipe_id = req.body.recipeId;
     await user_utils.markAsViewed(user_id,recipe_id);
@@ -80,6 +84,10 @@ router.post('/viewedPost', async (req,res,next) => {
  */
  router.post('/favoritesPost', async (req,res,next) => {
   try{
+    if(!req.body.recipeId || !req.session.user_id){
+      res.sendStatus(400);
+      return;
+    }
     const user_id = req.session.user_id;
     const recipe_id = req.body.recipeId;
     await user_utils.markAsFavorite(user_id,recipe_id)
