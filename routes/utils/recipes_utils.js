@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const axios = require("axios");
 const DButils = require("./DButils");
 const api_domain = "https://api.spoonacular.com/recipes";
@@ -78,10 +77,56 @@ async function search(query){
         });
 
     }
-    return response;
+    let results= response.data.results;
+    let previews= getSearchRecipesPreview(results);
+    return previews;
 
 }
 
+
+/**
+ * Get recipes list from the search function and return the preview of all the recipes
+ * @param {*} recipes - array of recipes which came back from the search query
+ */
+async function getSearchRecipesPreview(recipes){
+    let ret_recipes=[];
+    recipes.map((recipe)=>{
+        let recipe_details = recipe;
+        if(recipe.data){
+            recipe_details = recipe.data;
+        }
+        const{
+            id,
+            title,
+            readyInMinutes,
+            image,
+            aggregateLikes,
+            vegan,
+            vegetarian,
+            glutenFree,
+            analyzedInstructions
+        } = recipe_details;
+        ret_recipes.push({
+            id: id,
+            title: title,
+            image: image,
+            readyInMinutes: readyInMinutes,
+            popularity: aggregateLikes,
+            vegan: vegan,
+            vegetarian: vegetarian,
+            glutenFree: glutenFree,
+            analyzedInstructions: analyzedInstructions
+    
+        });  
+    });
+    return ret_recipes;
+
+}
+
+
+/**
+ * Gets 20 random recipes from the spooncular api
+ */
 async function getRandomRecipes(){
     const response = await axios.get(`${api_domain}/random`,{
         params: {
@@ -156,28 +201,6 @@ async function getRandomThreeRecipes(){
  */
 async function getRecipeFullDetails(recipe_id) {
     let recipe_info = await getRecipeInformation(recipe_id);
-    let { id, title, readyInMinutes, image, aggregateLikes, vegan, vegetarian, glutenFree } = recipe_info.data;
-
-    return {
-        id: id,
-        title: title,
-        readyInMinutes: readyInMinutes,
-        image: image,
-        popularity: aggregateLikes,
-        vegan: vegan,
-        vegetarian: vegetarian,
-        glutenFree: glutenFree,
-        
-    }
-}
-
-
-/**
- * return recipes full data according to the id entered
- * @param {*} recipe_id - the id of the recipe which we want to get his full details
- */
-async function getRecipeFullDetails(recipe_id) {
-    let recipe_info = await getRecipeInformation(recipe_id);
     if(recipe_id.startsWith('d')){
         return recipe_info;
     }
@@ -185,8 +208,11 @@ async function getRecipeFullDetails(recipe_id) {
 }
 
 
-exports.getRecipeDetails = getRecipeDetails;
+
+exports.getRandomThreeRecipes = getRandomThreeRecipes;
+exports.search = search;
+exports.getRecipeFullDetails = getRecipeFullDetails;
+exports.getRecipesPreview = getRecipesPreview;
+exports.getSearchRecipesPreview = getSearchRecipesPreview;
 
 
-
->>>>>>> a438f61a8b36c2e4b601b64bde7e39c517e70473
