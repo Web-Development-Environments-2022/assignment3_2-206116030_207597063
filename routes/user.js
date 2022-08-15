@@ -2,53 +2,209 @@ var express = require("express");
 var router = express.Router();
 const DButils = require("./utils/DButils");
 const user_utils = require("./utils/user_utils");
-const recipe_utils = require("./utils/recipes_utils");
 
 /**
  * Authenticate all incoming requests by middleware
  */
 router.use(async function (req, res, next) {
   if (req.session && req.session.user_id) {
-    DButils.execQuery("SELECT user_id FROM users").then((users) => {
-      if (users.find((x) => x.user_id === req.session.user_id)) {
+    DButils.execQuery("SELECT UserID FROM users").then((users) => {
+      if (users.find((x) => x.UserID === req.session.user_id)) {
         req.user_id = req.session.user_id;
         next();
       }
     }).catch(err => next(err));
   } else {
-    res.sendStatus(401);
+    next()
   }
 });
 
 
 /**
- * This path gets body with recipeId and save this recipe in the favorites list of the logged-in user
+ * Returns the last 3 viewed recipes that were viewed by the logged-in user
  */
-router.post('/favorites', async (req,res,next) => {
+ router.get('/viewed3', async (req,res,next) => {
+  try{
+    const user_id = req.session.user_id;
+    var recipes_id_sp = await user_utils.getRecipesSp(user_id,"viewdrecipes");
+    if(recipes_id_sp.length <=3){
+      res.status(200).send(recipes_id_sp);
+    }
+    else{
+      let len = recipes_id_sp.length 
+      let top_3 = [recipes_id_sp[len-1],recipes_id_sp[len-2],recipes_id_sp[len-3]]
+      res.status(200).send(top_3);
+
+    }
+    // const user_id = req.session.user_id;
+    // const recipes_id_db = await user_utils.getRecipesDB(user_id,"viewdrecipes");
+    // const recipes_id_sp = await user_utils.getRecipesSp(user_id,"viewdrecipes");
+    // var merge_results;
+    // if(recipes_id_db.length > 0 && recipes_id_sp.length >0){
+    //   merge_results= [recipes_id_db, recipes_id_sp];
+    //   res.status(200).send(merge_results);
+    // }
+    // else if(recipes_id_db.length >0 ){
+    //   merge_results = recipes_id_db;
+
+    // }
+    // else{
+    //   merge_results = recipes_id_sp;
+
+    // }
+
+    // if(merge_results.length >=3){
+    //   let ret=[merge_results[0],merge_results[1],merge_results[2]];
+    //   res.status(200).send(ret);
+    // }
+    // else{
+    //   res.status(200).send(merge_results);
+    // }
+  } catch(error){
+    console.log(error);
+    res.sendStatus(500);
+
+  }
+});
+
+
+/**
+ * Returns the viewed recipes id`s that were viewed by the logged-in user
+ */
+ router.get('/viewed', async (req,res,next) => {
+  try{
+    const user_id = req.session.user_id;
+    const recipes_id = await user_utils.getViewedRecipes(user_id);
+    res.status(200).send(recipes_id);
+  } catch(error){
+    console.log(error);
+    res.sendStatus(500);
+  }
+});
+
+/**
+ * Saves <user_id, recipe_id> pair in the viewedRecipes table 
+ */
+router.post('/viewedPost', async (req,res,next) => {
   try{
     const user_id = req.session.user_id;
     const recipe_id = req.body.recipeId;
-    await user_utils.markAsFavorite(user_id,recipe_id);
-    res.status(200).send("The Recipe successfully saved as favorite");
+    await user_utils.markAsViewed(user_id,recipe_id);
+    res.status(200).send("The Recipe successfully saved as viewed");
     } catch(error){
-    next(error);
+      console.log(error);
+      res.sendStatus(500);
+
   }
 })
 
 /**
- * This path returns the favorites recipes that were saved by the logged-in user
+ * Saves <user_id, recipe_id> pair in the favoriteRecipes table 
+ */
+ router.post('/favoritesPost', async (req,res,next) => {
+  try{
+    const user_id = req.session.user_id;
+    const recipe_id = req.body.recipeId;
+    await user_utils.markAsFavorite(user_id,recipe_id)
+    res.status(200).send("The Recipe successfully saved as favorite");
+    } catch(error){
+      console.log(error);
+      res.sendStatus(500);
+
+  }
+})
+
+
+/**
+ * Returns the favorites recipes that were saved by the logged-in user
  */
 router.get('/favorites', async (req,res,next) => {
   try{
     const user_id = req.session.user_id;
-    let favorite_recipes = {};
-    const recipes_id = await user_utils.getFavoriteRecipes(user_id);
-    let recipes_id_array = [];
-    recipes_id.map((element) => recipes_id_array.push(element.recipe_id)); //extracting the recipe ids into array
-    const results = await recipe_utils.getRecipesPreview(recipes_id_array);
-    res.status(200).send(results);
+    const recipes_id_db = await user_utils.getRecipesDB(user_id,"favoriterecipes");
+    const recipes_id_sp = await user_utils.getRecipesSp(user_id,"favoriterecipes");
+    if(recipes_id_db.length > 0 && recipes_id_sp.length >0){
+      const merge_results= [recipes_id_db, recipes_id_sp];
+      res.status(200).send(merge_results);
+    }
+    else if(recipes_id_db.length >0 ){
+      res.status(200).send(recipes_id_db);
+
+    }
+    else{
+      res.status(200).send(recipes_id_sp);
+    }
   } catch(error){
-    next(error); 
+    console.log(error);
+    res.sendStatus(500);
+
+  }
+});
+
+
+/**
+ * Returnes the previews of the recipes the user has added and saved in the DB
+ */
+router.get('/myRecipes', async (req,res,next) => {
+  try{
+    const user_id = req.session.user_id;
+    const my_recipes = await user_utils.getRecipesDB(user_id, "myrecipes");
+    res.status(200).send(my_recipes);
+  } catch(error){
+    console.log(error);
+    res.sendStatus(500);
+
+  }
+});
+
+/**
+ * Saves a new recipe in the DB
+ */
+ router.post("/addRecipe", async (req, res) =>{
+  try{
+    var count = await DButils.execQuery("SELECT COUNT(*) as count FROM recipes");
+    let recipe_details = {
+    userID: req.session.user_id,
+    recipeID: 'd'+(count[0]["count"]+1).toString(),
+    title: req.body.title,
+    recipeImage: req.body.image,
+    readyInMinutes: req.body.readyInMinutes,
+    totalLikes: '0',
+    vegan: req.body.vegan ,
+    vegeterian: req.body.vegeterian,
+    glutenFree: req.body.glutenFree,
+    servings: req.body.servings,
+    analyzedInstructions: req.body.analyzedInstructions,
+    ingredients: req.body.extendedIngredients,
+    pricePerServing: '1'
+  }
+  //id=id+1;
+  let bool = await user_utils.addRecipeToDB(recipe_details);
+  if(bool){
+    res.status(201).send({ message: "recipe created", success: true });
+  }
+  else{
+    res.sendStatus(400);
+  }
+} catch (error) {
+  res.sendStatus(400);
+  console.log(error);
+
+}
+})
+
+/**
+ * Returnes the previews of the recipes the user has added and saved in the DB
+ */
+ router.get('/myFamilyRecipes', async (req,res,next) => {
+  try{
+    const user_id = req.session.user_id;
+    let our_family_recipes = await user_utils.getOurFamilyRecipes(user_id);
+    console.log(our_family_recipes);
+    res.status(200).send(our_family_recipes);
+  } catch(error){
+    console.log(error);
+    res.sendStatus(404);
   }
 });
 
@@ -56,3 +212,4 @@ router.get('/favorites', async (req,res,next) => {
 
 
 module.exports = router;
+
