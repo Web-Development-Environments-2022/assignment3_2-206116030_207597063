@@ -51,7 +51,8 @@ app.get("/",function(req,res)
   // res.sendFile(__dirname+"/index.html");
 
 });
-
+//test1 
+//test2
 // app.use(cors());
 // app.options("*", cors());
 
