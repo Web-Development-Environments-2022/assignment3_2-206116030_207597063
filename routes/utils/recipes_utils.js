@@ -37,13 +37,29 @@ async function getRecipeInformation(recipe_id) {
  * @param {*} query - the query to search with on the external API
  */
 async function search(query){
-    const name = query.name;
-    const amount = query.amount;
-    // 5 10 15
-    const filter = query.filter;
-    // 0 | 1
-    const sortBy= query.sort;
-    // popularity | time
+    var name = "";
+    var amount = 5;
+    var filter = 0;
+    var sortBy = "time";
+    if(query.name){
+        name = query.name;
+    }
+    if(query.amount){
+        amount = query.amount;
+    }
+    if(query.filter){
+        filter= query.filter;
+    }
+    if(query.sortBy){
+        sortBy = query.sort
+    }
+    // const name = query.name;
+    // const amount = query.amount;
+    // // 5 10 15
+    // const filter = query.filter;
+    // // 0 | 1
+    // const sortBy= query.sort;
+    // // popularity | time
     var response;
 
     if( filter == 1 ){

@@ -12,6 +12,10 @@ const bcrypt = require("bcrypt");
  */
 router.post("/Register", async (req, res, next) => {
   try {
+    if(!req.body.username || !req.body.firstname || !req.body.lastname|| !req.body.country || !req.body.password|| !req.body.email){
+      res.sendStatus(400,"Missing fields to complete register");
+      return;
+    }
     let user_details = {
       username: req.body.username,
       firstname: req.body.firstname,
@@ -19,7 +23,6 @@ router.post("/Register", async (req, res, next) => {
       country: req.body.country,
       password: req.body.password,
       email: req.body.email,
-      // profilePic: req.body.profilePic
     }
     let users = [];
     users = await DButils.execQuery("SELECT username from users");

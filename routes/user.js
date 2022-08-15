@@ -36,30 +36,7 @@ router.use(async function (req, res, next) {
       res.status(200).send(top_3);
 
     }
-    // const user_id = req.session.user_id;
-    // const recipes_id_db = await user_utils.getRecipesDB(user_id,"viewdrecipes");
-    // const recipes_id_sp = await user_utils.getRecipesSp(user_id,"viewdrecipes");
-    // var merge_results;
-    // if(recipes_id_db.length > 0 && recipes_id_sp.length >0){
-    //   merge_results= [recipes_id_db, recipes_id_sp];
-    //   res.status(200).send(merge_results);
-    // }
-    // else if(recipes_id_db.length >0 ){
-    //   merge_results = recipes_id_db;
-
-    // }
-    // else{
-    //   merge_results = recipes_id_sp;
-
-    // }
-
-    // if(merge_results.length >=3){
-    //   let ret=[merge_results[0],merge_results[1],merge_results[2]];
-    //   res.status(200).send(ret);
-    // }
-    // else{
-    //   res.status(200).send(merge_results);
-    // }
+   
   } catch(error){
     console.log(error);
     res.sendStatus(500);
@@ -162,6 +139,42 @@ router.get('/myRecipes', async (req,res,next) => {
  */
  router.post("/addRecipe", async (req, res) =>{
   try{
+    if(!req.session.user_id || !req.body.title || !req.body.image || !req.body.readyInMinutes|| !req.body.servings || !req.body.analyzedInstructions || !req.body.extendedIngredients){
+        res.sendStatus(400,"Missing fields to complete register");
+        console.log(req.body);
+        console.log(req.session.user_id);
+        return;
+      }
+
+    var ok = true;
+    req.body.extendedIngredients.map((ing) => {
+      if(!ing.name || !ing.amount || !ing.unit){
+        ok= false;
+        return;
+      }
+    });
+    req.body.analyzedInstructions.map((ins) => {
+      if(!ins.number || !ins.instruction){
+        if(ins.number !=0){
+          ok= false;
+          return;
+        }
+
+      }
+    });
+    if(!ok){
+      res.sendStatus(400,"Missing fields to complete recipe saving");
+      return;
+    }
+    if(!req.body.vegan){
+      req.body.vegan=0;
+    }
+    if(!req.body.vegeterian){
+      req.body.vegeterian=0;
+    }
+    if(!req.body.glutenFree){
+      req.body.glutenFree=0;
+    }
     var count = await DButils.execQuery("SELECT COUNT(*) as count FROM recipes");
     let recipe_details = {
     userID: req.session.user_id,

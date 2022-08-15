@@ -14,7 +14,7 @@ exports.execQuery = async function (query) {
   } catch (err) {
     await connection.query("ROLLBACK");
     console.log('ROLLBACK at querySignUp', err);
-    throw err;
+    //throw err;
   } finally {
     await connection.release();
   }
