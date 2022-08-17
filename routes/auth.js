@@ -2,7 +2,6 @@ var express = require("express");
 var router = express.Router();
 const DButils = require("../routes/utils/DButils");
 const bcrypt = require("bcrypt");
-//var id=1; //counter for the users id
 
 
 /**
@@ -31,7 +30,6 @@ router.post("/Register", async (req, res, next) => {
     if (users.find((x) => x.username === user_details.username)){
       res.sendStatus(409,"Username taken");
       return;
-      //throw { status: 409, message: "Username taken" };
     }
 
 
@@ -47,17 +45,15 @@ router.post("/Register", async (req, res, next) => {
       last_id = 0;
     }
     else{
-    console.log(last_id);
     last_id = last_id[0]["id"] + 1;
-    console.log(last_id);
     }
     // save the user details
     await DButils.execQuery(
       `INSERT INTO users VALUES ('${last_id}','${user_details.username}', '${user_details.firstname}', '${user_details.lastname}',
       '${user_details.country}', '${hash_password}', '${user_details.email}')`
     );
-    //id = id+1;
-    // update global counter 
+
+    
     res.status(201).send({ message: "user created", success: true });
   } catch (error) {
     console.log(error);
@@ -87,10 +83,8 @@ router.post("/Login", async (req, res, next) => {
     }
 
     // Set cookie
-    console.log(user.UserID);
     req.session.user_id = user.UserID;
     req.session.search='no search';
-    console.log(req.session.user_id);
 
 
     // return cookie
@@ -106,10 +100,8 @@ router.post("/Login", async (req, res, next) => {
  * Logout the user and reset the the session
  */
 router.post("/Logout", function (req, res) {
-  console.log("before logout: " + req.session.user_id);
   req.session.user_id = undefined;
   req.session.reset(); // reset the session info --> send cookie when  req.session == undefined!!
-  console.log("after logout: " + req.session.user_id);
   res.send({ success: true, message: "Logout succeeded" });
 });
 

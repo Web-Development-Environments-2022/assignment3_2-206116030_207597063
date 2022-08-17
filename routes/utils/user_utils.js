@@ -19,10 +19,9 @@ async function getViewedRecipes(user_id){
  * @param {*} recipe_id - the id of the recipe the user viewed
  */
 async function markAsViewed(user_id, recipe_id){
-    console.log(user_id);
-    console.log(recipe_id);
     const recipes_id = await DButils.execQuery(`select RecipeID from viewdrecipes where UserID='${user_id}'
      AND RecipeID='${recipe_id}'`);
+     // if there is no such record - insert it
     if(!recipes_id.length){
         await DButils.execQuery(`INSERT INTO viewdrecipes VALUES ('${user_id}','${recipe_id}')`);
         return true;
@@ -36,8 +35,6 @@ async function markAsViewed(user_id, recipe_id){
  * @param {*} recipe_id - the id of the recipe the user saved
  */
 async function markAsFavorite(user_id, recipe_id){
-    console.log("user: "+user_id);
-    console.log("recipe: "+recipe_id);
     await DButils.execQuery(`INSERT INTO favoriterecipes VALUES ('${user_id}', '${recipe_id}')`);
     return true;
 } 
@@ -67,7 +64,6 @@ async function markAsFavorite(user_id, recipe_id){
  * @param {*} recipe_details - json with the new recipe details
  */
  async function addRecipeToDB(recipe_details){
-    console.log(recipe_details);
     try{
         recipe_details.ingredients.map(async (ing) => await DButils.execQuery(`INSERT INTO ingredients VALUES (
             '${recipe_details.recipeID}',
@@ -91,7 +87,6 @@ async function markAsFavorite(user_id, recipe_id){
             '${instruction.instruction}')`
             ));
     
-        console.log('myrecipes');
         return true;
     }
     catch (error) {
@@ -121,8 +116,6 @@ async function familyHelper(element){
                 image2: element.image2,
                 image3: element.image3,
     };
-    console.log("helper");
-    console.log(recipe);
     return recipe;
 
 }

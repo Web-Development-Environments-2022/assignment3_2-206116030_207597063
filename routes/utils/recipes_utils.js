@@ -44,22 +44,18 @@ async function search(query){
     if(query.name){
         name = query.name;
     }
+    // 5 | 10 | 15
     if(query.amount){
         amount = query.amount;
     }
+    // 0 | 1
     if(query.filter){
         filter= query.filter;
     }
+    // popularity | time
     if(query.sortBy){
         sortBy = query.sort
     }
-    // const name = query.name;
-    // const amount = query.amount;
-    // // 5 10 15
-    // const filter = query.filter;
-    // // 0 | 1
-    // const sortBy= query.sort;
-    // // popularity | time
     var response;
 
     if( filter == 1 ){

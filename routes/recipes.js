@@ -8,16 +8,6 @@ const user_utils = require("./utils/user_utils");
 
 router.get("/", (req, res) => res.send("im here"));
 
-router.get("/image" , async(req, res) => {
-  try{
-    res.sendFile("../images/frikase.jpeg");
-  }catch(error){
-    console.log(error);
-    res.sendStatus(404);
-  }
-});
-
-
 /**
  * Returns recipes previews that matches the query
  */
@@ -86,15 +76,12 @@ router.get("/random", async (req, res , next) => {
 router.get("/:recipeId", async (req, res, next) => {
   try {
     const recipe = await recipes_utils.getRecipeFullDetails(req.params.recipeId);
-    console.log(req.session);
-    console.log(req.session.user_id);
-
 
     //if the action done by signed in user then save the recipe as viewed
     if(req.session && req.session.user_id){
       await user_utils.markAsViewed(req.session.user_id,req.params.recipeId);
-      console.log("succsess");
     }
+    
     let ret= {
       id: recipe.id,
       title: recipe.title,
